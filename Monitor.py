@@ -1,6 +1,7 @@
 import time, os, sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from Subprocess import Subprocess
 
 # We need to specify what the eventhandler does when file event returns
 class CustomHandler(FileSystemEventHandler):
@@ -12,7 +13,8 @@ class CustomHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         # Should move the contents of downloads into their respective directory
-        pass
+        print("Changes made.")
+        print(f"Event Info: {event}\n")
 
 class Monitor:
 
@@ -31,3 +33,10 @@ class Monitor:
         finally:
             self.observer.stop()
             self.observer.join()
+
+
+if __name__ == "__main__":
+    process = Subprocess()
+    directory = process.ask_user_folder()
+    monitor = Monitor(directory)
+    monitor.start()
