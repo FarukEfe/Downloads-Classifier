@@ -1,23 +1,25 @@
-import time
+import time, os, sys
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler,FileCreatedEvent
+from watchdog.events import FileSystemEventHandler
 
 # We need to specify what the eventhandler does when file event returns
 class CustomHandler(FileSystemEventHandler):
 
-    def __init__(self):
+    def __init__(self,observing):
         super().__init__()
+        self.directory = observing
+        # Should store different directories to store different file types (pdfs into docments, jpeg into images, etc))
 
-    def on_created(self, event):
+    def on_modified(self, event):
+        # Should move the contents of downloads into their respective directory
         pass
-    
-class Monitor:
 
-    event_handler = FileSystemEventHandler()
+class Monitor:
 
     def __init__(self, directory):
         self.directory = directory
         self.observer = Observer()
+        self.event_handler = CustomHandler(directory)
 
     def start(self):
         self.observer.schedule(self.event_handler, self.directory, recursive=True)
