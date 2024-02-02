@@ -21,12 +21,6 @@ class CustomHandler(FileSystemEventHandler):
         else:
             self.handler(event.src_path)
 
-        
-
-    def on_any_event(self, event):
-        print(event.event_type)
-        print(event.src_path)
-
 class Monitor:
 
     queue: {str:str} = {}
@@ -42,7 +36,7 @@ class Monitor:
         file_format = file_path.split(".")[-1] # Get file format
         destination = self.dest_handler.get_destination(file_format) # Get destination by format
         # Ignores job if there's no assigned destination
-        if destination is None or self.queue[file_path] != None:
+        if destination is None:
             return
         # Add new job to dictionary
         self.queue[file_path] = destination
@@ -67,17 +61,19 @@ class Monitor:
 if __name__ == "__main__":
     process = Subprocess()
     directory = process.ask_user_folder()
+    test_file = process.ask_user_folder() # T
     monitor = Monitor(directory)
+    monitor.dest_handler.set_destination("pdf",test_file) # T
     monitor.start()
     try:
         while monitor.is_alive():
             for key in monitor.queue.keys(): # Iterate through all keys
                 dest = monitor.queue[key] # Get destination
-                Subprocess.move_file(file_dir=key,destination=dest) # Perform job
+                process.move_file(file_dir=key,destination=dest) # Perform job
                 del monitor.queue[key] # Remove from queue
             # Monitor cycle
             monitor.join(1)
-            time.sleep(0.05)
+            time.sleep(1)
     finally:
         monitor.stop()
-        monitor.join()
+        monitor.join(0)

@@ -21,4 +21,6 @@ class Subprocess:
         return dir_list
     
     def move_file(self, file_dir: str, destination: str):
-        subprocess.call(f"move {file_dir} {destination}")
+        print(file_dir, destination)
+        adjusted = file_dir.replace(" ","\ ") # Adjusts spaces to powershell
+        subprocess.call(f"move {adjusted} {destination}")
