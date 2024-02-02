@@ -6,5 +6,8 @@ class DestinationHandler:
         self.data[format] = dest
     
     def get_destination(self, format:str) -> str:
-        return self.data[format]
+        try:
+            return self.data[format]
+        except:
+            return None
     

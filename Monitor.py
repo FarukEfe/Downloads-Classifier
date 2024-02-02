@@ -10,7 +10,6 @@ class CustomHandler(FileSystemEventHandler):
     def __init__(self, handler: callable):
         super().__init__()
         self.handler = handler
-        # Should store different directories to store different file types (pdfs into docments, jpeg into images, etc))
 
     def on_modified(self, event):
         # Should move the contents of downloads into their respective directory
@@ -30,25 +29,27 @@ class CustomHandler(FileSystemEventHandler):
 
 class Monitor:
 
-    queue: {str:str} = []
+    queue: {str:str} = {}
 
     def __init__(self, directory):
         self.directory = directory
         self.observer = Observer()
-        self.event_handler = CustomHandler()
+        self.event_handler: FileSystemEventHandler = None
         self.dest_handler = DestinationHandler()
 
     # Adds new job to queue 
     def add_to_queue(self, file_path):
-        file_format = file_path.split(".")[-1]
-        self.queue.append(
-            {
-                file_path : self.dest_handler.get_destination(file_format)
-            }
-        )
+        file_format = file_path.split(".")[-1] # Get file format
+        destination = self.dest_handler.get_destination(file_format) # Get destination by format
+        # Ignores job if there's no assigned destination
+        if destination is None or self.queue[file_path] != None:
+            return
+        # Add new job to dictionary
+        self.queue[file_path] = destination
         
     # Event handler and observer setup
     def start(self):
+        self.event_handler = CustomHandler(self.add_to_queue)
         self.observer.schedule(self.event_handler, self.directory, recursive=True)
         self.observer.start()
     
@@ -70,10 +71,10 @@ if __name__ == "__main__":
     monitor.start()
     try:
         while monitor.is_alive():
-            for job in monitor.queue:
-                key = job.keys[0]
-                dest = job[key]
-                Subprocess.move_file(file_dir=key,destination=dest)
+            for key in monitor.queue.keys(): # Iterate through all keys
+                dest = monitor.queue[key] # Get destination
+                Subprocess.move_file(file_dir=key,destination=dest) # Perform job
+                del monitor.queue[key] # Remove from queue
             # Monitor cycle
             monitor.join(1)
             time.sleep(0.05)
