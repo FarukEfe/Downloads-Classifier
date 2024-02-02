@@ -1,5 +1,5 @@
 from tkinter import filedialog
-import os
+import os, subprocess
 
 class Subprocess:
 
@@ -19,3 +19,6 @@ class Subprocess:
                     dir_list.append(os.path.abspath(os.path.join(root, dir)))
     
         return dir_list
+    
+    def move_file(self, file_dir: str, destination: str):
+        subprocess.call(f"move {file_dir} {destination}")

@@ -20,7 +20,7 @@ class CustomHandler(FileSystemEventHandler):
             # Gather directory contents
             pass
         else:
-            file_format = event.src_path.split(".")[-1]
+            self.handler(event.src_path)
 
         
 
@@ -30,23 +30,37 @@ class CustomHandler(FileSystemEventHandler):
 
 class Monitor:
 
+    queue: {str:str} = []
+
     def __init__(self, directory):
         self.directory = directory
         self.observer = Observer()
         self.event_handler = CustomHandler()
         self.dest_handler = DestinationHandler()
-        
 
+    # Adds new job to queue 
+    def add_to_queue(self, file_path):
+        file_format = file_path.split(".")[-1]
+        self.queue.append(
+            {
+                file_path : self.dest_handler.get_destination(file_format)
+            }
+        )
+        
+    # Event handler and observer setup
     def start(self):
         self.observer.schedule(self.event_handler, self.directory, recursive=True)
         self.observer.start()
-        try:
-            while self.observer.is_alive():
-                self.observer.join(1)
-                time.sleep(0.05)
-        finally:
-            self.observer.stop()
-            self.observer.join()
+    
+    # Return if watchdog observer is running
+    def is_alive(self):
+        return self.observer.is_alive()
+    
+    def join(self, timeout: float | None):
+        monitor.observer.join(timeout)
+    
+    def stop(self):
+        monitor.observer.stop()
 
 
 if __name__ == "__main__":
@@ -54,3 +68,15 @@ if __name__ == "__main__":
     directory = process.ask_user_folder()
     monitor = Monitor(directory)
     monitor.start()
+    try:
+        while monitor.is_alive():
+            for job in monitor.queue:
+                key = job.keys[0]
+                dest = job[key]
+                Subprocess.move_file(file_dir=key,destination=dest)
+            # Monitor cycle
+            monitor.join(1)
+            time.sleep(0.05)
+    finally:
+        monitor.stop()
+        monitor.join()
