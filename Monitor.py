@@ -51,11 +51,16 @@ class Monitor:
     def is_alive(self):
         return self.observer.is_alive()
     
-    def join(self, timeout: float | None):
+    def join(self, timeout: float):
         monitor.observer.join(timeout)
     
     def stop(self):
         monitor.observer.stop()
+    
+    def delete_keys(self, keys: [str]):
+        for key in keys:
+            del self.queue[key]
+
 
 
 if __name__ == "__main__":
@@ -67,10 +72,14 @@ if __name__ == "__main__":
     monitor.start()
     try:
         while monitor.is_alive():
+            remove_keys = []
             for key in monitor.queue.keys(): # Iterate through all keys
                 dest = monitor.queue[key] # Get destination
-                process.move_file(file_dir=key,destination=dest) # Perform job
-                del monitor.queue[key] # Remove from queue
+                process.move_file(key,dest) # Perform job
+                remove_keys.append(key) # Append to deleting keys
+            
+            monitor.delete_keys(remove_keys) # Delete keys after all jobs are done
+            
             # Monitor cycle
             monitor.join(1)
             time.sleep(1)
