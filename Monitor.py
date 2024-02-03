@@ -1,4 +1,4 @@
-import time, os, sys, functools
+import time, os, sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from Subprocess import Subprocess
@@ -17,7 +17,15 @@ class CustomHandler(FileSystemEventHandler):
         print(f"Event Info: {event}\n")
         if event.is_directory:
             # Gather directory contents
-            pass
+            file_paths = []
+            w = os.walk(event.src_path)
+            for root, _, files in w:
+                for file in files:
+                    p = os.path.join(root, file)
+                    file_paths.append(p)
+            # Add all files to queue
+            for path in file_paths:
+                self.handler(path)
         else:
             self.handler(event.src_path)
 

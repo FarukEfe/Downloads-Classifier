@@ -22,4 +22,6 @@ class Subprocess:
     
     def move_file(self, file_dir: str, destination: str):
         print(file_dir,destination)
+        # The command script only works for windows directories and in PowerShell
+        # Change up the script in order to run this for different operating systems
         subprocess.run(f"move \"{file_dir}\" \"{destination}\"",shell=True)
