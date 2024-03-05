@@ -31,7 +31,7 @@ class CustomHandler(FileSystemEventHandler):
 
 class Monitor:
 
-    queue: {str:str} = {}
+    queue: dict[str:str] = {}
 
     def __init__(self, directory):
         self.directory = directory
@@ -65,7 +65,7 @@ class Monitor:
     def stop(self):
         monitor.observer.stop()
     
-    def delete_keys(self, keys: [str]):
+    def delete_keys(self, keys: list[str]):
         for key in keys:
             del self.queue[key]
 
