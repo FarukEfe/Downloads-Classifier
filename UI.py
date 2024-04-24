@@ -1,12 +1,15 @@
 # User Interface gathers the directories as user input to deterine where to classify each file type
 # Holds class called Settings that holds a dictionary of file types and their destination
 # As well as if the program should or should not ignore suspicious files
+from importlib import import_module
+# Internal Modules
 from Monitor import Monitor
 from Subprocess import Subprocess
-import tkinter as tk
-import customtkinter as ctk
-from tkinter import ttk
 from Helpers import *
+# Design Libraries
+import tkinter as tk
+from tkinter import ttk
+# Threading
 from threading import Thread,Event
 
 # This custom button class will be used for better design, abstraction and specialized use of buttons on the window
@@ -20,7 +23,6 @@ class App:
     monitor = Monitor() # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
 
-
     def __init__(self):
         self.window = tk.Tk() # Main window
         self.event = Event() # Handle monitor thread
@@ -29,11 +31,14 @@ class App:
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
     
     # View Layout
-    def __gen_frame(self) -> ctk.CTkFrame:
+    def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         button_frame = ctk.CTkFrame(master=self.window)
         button_frame.place(relx=0.1,rely=0.5,relwidth=0.2,relheight=1.0,anchor='center')
         button_frame.pack()
-        return button_frame
+        contents_frame = ctk.CTkFrame(master=self.window)
+        contents_frame.place(relx = 0.6,rely=0.5,relwidth=0.8,relheight=1.0,anchor='center')
+        contents_frame.pack()
+        return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
         # Generate buttons, input fields & assign tasks
@@ -45,6 +50,13 @@ class App:
         button_dest.pack(pady=10)
         button_start.pack(pady=10)
         button_stop.pack(pady=10)
+    
+    def __gen_contents(self,frame):
+        # Genetate contents that display
+        # Should display monitoring file
+        # Should display a table of set directories for file types
+        # Should display if watchdog is running
+        pass
     
     # Back-end Operations
     def __kill_thread(self):
@@ -80,8 +92,9 @@ class App:
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop
-        frame = self.__gen_frame()
-        self.__gen_buttons(frame)
+        button_frame,contents_frame = self.__gen_frames()
+        self.__gen_buttons(button_frame)
+        self.__gen_contents(contents_frame)
         # This is the app mainloop
         self.window.mainloop()
 
