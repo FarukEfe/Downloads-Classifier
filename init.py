@@ -1,27 +1,21 @@
 # User Interface gathers the directories as user input to deterine where to classify each file type
 # Holds class called Settings that holds a dictionary of file types and their destination
 # As well as if the program should or should not ignore suspicious files
-from importlib import import_module
 # Internal Modules
 from Monitor import Monitor
 from Workers.Subprocess import Subprocess
-from Workers.Helpers import *
+from Helpers import *
 # Design Libraries
 import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
+from Components.UI import *
 # Threading
 from threading import Thread,Event
 
-# This custom button class will be used for better design, abstraction and specialized use of buttons on the window
-class CustomButton(ctk.CTkButton):
-    def __init__(self,window:ctk.CTkFrame,txt:str,call:callable):
-        super().__init__(window,text=txt,command=call)
-        self.place(relx=0.5,rely=0.5,width=120,relheight=30,anchor='center')
-
 class App:
 
-    monitor = Monitor("") # This class starts monitoring the downloads
+    monitor = Monitor(None) # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
 
     def __init__(self):
@@ -44,7 +38,7 @@ class App:
     def __gen_buttons(self,frame):
         # Generate buttons, input fields & assign tasks
         button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=lambda x: x+1)
-        button_dest = ttk.Button(master=frame,text="Choose Destination For Your Files",command= lambda x: x+1)
+        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command= lambda x: x+1)
         button_start = ttk.Button(master=frame,text="Start",command=self.__run_monitor)
         button_stop = ttk.Button(master=frame,text="Stop",command=self.__kill_thread)
         button_dir.pack(pady=10)
