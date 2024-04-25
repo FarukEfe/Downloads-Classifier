@@ -10,15 +10,19 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from Components.UI import *
-# Threading
+# Other Libraries
 from threading import Thread,Event
+import os
 
 class App:
 
-    monitor = Monitor(None) # This class starts monitoring the downloads
+    monitor = Monitor() # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
-    selected_format = ""
+    selected_format = "pdf"
     on = False
+    
+    # User Feedback
+    destination_feeback = False
 
     def __init__(self):
         self.window = tk.Tk() # Main window
@@ -31,6 +35,18 @@ class App:
     def __select_format(self,choice):
         self.selected_format = choice
     
+    def __set_format_destination(self):
+        target = self.process.ask_user_folder()
+        if os.path.exists(target) and os.path.isdir(target):
+            self.monitor.dest_handler.set_destination(self.selected_format,target)
+            self.destination_feeback = False
+            return
+        self.destination_feeback = True
+    
+    def __set_monitor_file(self):
+        folder = self.process.ask_user_folder()
+        self.monitor.set_directory(folder)
+    
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         button_frame = ctk.CTkFrame(master=self.window)
@@ -41,17 +57,17 @@ class App:
     
     def __gen_buttons(self,frame):
         # Generate buttons, input fields & assign tasks
-        button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=lambda x: x+1) # Sets monitor downloads folder
+        button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         # Dropdown that associates with destination button
         dp = dropdown(window=frame,values=ftypes,width=120,height=30,call=self.__select_format)
-        dp.pack()
-        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command=lambda x: x+1) # self.monitor.dest_handler.set_destination(ftype,self.process.ask_user_folder())
+        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command=self.__set_format_destination)
         button_start = ttk.Button(master=frame,text="Start",command=self.__run_monitor)
         button_stop = ttk.Button(master=frame,text="Stop",command=self.__kill_thread)
         button_dir.pack(pady=10)
         button_dest.pack(pady=10)
         button_start.pack(pady=10)
         button_stop.pack(pady=10)
+        dp.pack()
     
     def __gen_contents(self,frame):
         # Genetate contents that display
@@ -89,8 +105,6 @@ class App:
     def __run_monitor(self):
         t = Thread(target=self.__monitor_mainloop,args=(self.event,))
         t.start()
-        
-
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop

@@ -33,11 +33,14 @@ class Monitor:
 
     queue: dict[str:str] = {}
 
-    def __init__(self, directory):
-        self.directory = directory
+    def __init__(self):
+        self.directory = None
         self.observer = Observer()
         self.event_handler: FileSystemEventHandler = None
         self.dest_handler = DestinationHandler()
+
+    def set_directory(self,directory):
+        self.directory = directory
 
     # Adds new job to queue 
     def add_to_queue(self, file_path):
@@ -50,10 +53,13 @@ class Monitor:
         self.queue[file_path] = destination
         
     # Event handler and observer setup
-    def start(self):
+    def start(self) -> int:
+        if self.directory == None:
+            return 0
         self.event_handler = CustomHandler(self.add_to_queue)
         self.observer.schedule(self.event_handler, self.directory, recursive=True)
         self.observer.start()
+        return 1
     
     # Return if watchdog observer is running
     def is_alive(self):
