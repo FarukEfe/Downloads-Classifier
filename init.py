@@ -29,10 +29,8 @@ class App:
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         button_frame = ctk.CTkFrame(master=self.window)
         button_frame.place(relx=0.1,rely=0.5,relwidth=0.2,relheight=1.0,anchor='center')
-        button_frame.pack()
         contents_frame = ctk.CTkFrame(master=self.window)
         contents_frame.place(relx = 0.6,rely=0.5,relwidth=0.8,relheight=1.0,anchor='center')
-        contents_frame.pack()
         return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
