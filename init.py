@@ -17,6 +17,7 @@ class App:
 
     monitor = Monitor(None) # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
+    on = False
 
     def __init__(self):
         self.window = tk.Tk() # Main window
@@ -35,8 +36,8 @@ class App:
     
     def __gen_buttons(self,frame):
         # Generate buttons, input fields & assign tasks
-        button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=lambda x: x+1)
-        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command= lambda x: x+1)
+        button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=lambda x: x+1) # Sets monitor downloads folder
+        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command=lambda x: x+1) # self.monitor.dest_handler.set_destination(ftype,self.process.ask_user_folder())
         button_start = ttk.Button(master=frame,text="Start",command=self.__run_monitor)
         button_stop = ttk.Button(master=frame,text="Stop",command=self.__kill_thread)
         button_dir.pack(pady=10)
