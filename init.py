@@ -17,6 +17,7 @@ class App:
 
     monitor = Monitor(None) # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
+    selected_format = ""
     on = False
 
     def __init__(self):
@@ -25,6 +26,10 @@ class App:
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
+
+    # Internal Calls
+    def __select_format(self,choice):
+        self.selected_format = choice
     
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
@@ -37,6 +42,9 @@ class App:
     def __gen_buttons(self,frame):
         # Generate buttons, input fields & assign tasks
         button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=lambda x: x+1) # Sets monitor downloads folder
+        # Dropdown that associates with destination button
+        dp = dropdown(window=frame,values=ftypes,width=120,height=30,call=self.__select_format)
+        dp.pack()
         button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command=lambda x: x+1) # self.monitor.dest_handler.set_destination(ftype,self.process.ask_user_folder())
         button_start = ttk.Button(master=frame,text="Start",command=self.__run_monitor)
         button_stop = ttk.Button(master=frame,text="Stop",command=self.__kill_thread)
