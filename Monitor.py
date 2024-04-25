@@ -1,8 +1,8 @@
 import time, os, sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from Subprocess import Subprocess
-from DestinationHandler import DestinationHandler
+from Workers.Subprocess import Subprocess
+from Workers.DestinationHandler import DestinationHandler
 
 # We need to specify what the eventhandler does when file event returns
 class CustomHandler(FileSystemEventHandler):

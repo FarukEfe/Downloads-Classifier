@@ -4,8 +4,8 @@
 from importlib import import_module
 # Internal Modules
 from Monitor import Monitor
-from Subprocess import Subprocess
-from Helpers import *
+from Workers.Subprocess import Subprocess
+from Workers.Helpers import *
 # Design Libraries
 import tkinter as tk
 from tkinter import ttk
@@ -21,7 +21,7 @@ class CustomButton(ctk.CTkButton):
 
 class App:
 
-    monitor = Monitor() # This class starts monitoring the downloads
+    monitor = Monitor("") # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
 
     def __init__(self):
