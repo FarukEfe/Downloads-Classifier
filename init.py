@@ -25,7 +25,9 @@ class App:
     destination_feeback = False
 
     def __init__(self):
-        self.window = tk.Tk() # Main window
+        self.window = ctk.CTk() # Main window
+        #ctk.set_appearance_mode("dark")
+        #ctk.set_default_color_theme("blue")
         self.event = Event() # Handle monitor thread
         # Tk window specs
         self.window.title("Downloads Classifier")
@@ -50,24 +52,28 @@ class App:
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         button_frame = ctk.CTkFrame(master=self.window)
-        button_frame.place(relx=0.1,rely=0.5,relwidth=0.2,relheight=1.0,anchor='center')
+        button_frame.place(relx=0.2,rely=0.5,relwidth=0.4,relheight=1.0,anchor='center')
         contents_frame = ctk.CTkFrame(master=self.window)
-        contents_frame.place(relx = 0.6,rely=0.5,relwidth=0.8,relheight=1.0,anchor='center')
+        contents_frame.place(relx = 0.7,rely=0.5,relwidth=0.6,relheight=1.0,anchor='center')
         return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
+        centered = ctk.CTkFrame(master=frame)
+        flex_frame = ctk.CTkFrame(master=centered)
+        button_dir = ctk.CTkButton(master=centered,text="Choose Downloads Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
+        button_dest = ctk.CTkButton(master=flex_frame,text="Choose Destination For Format",command=self.__set_format_destination)
+        dp = dropdown(window=flex_frame,values=ftypes,width=120,height=30,call=self.__select_format)
+        button_start = ctk.CTkButton(master=centered,text="Start",command=self.__run_monitor)
+        button_stop = ctk.CTkButton(master=centered,text="Stop",command=self.__kill_thread)
         # Generate buttons, input fields & assign tasks
-        button_dir = ttk.Button(master=frame,text="Choose Downloads Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         # Dropdown that associates with destination button
-        dp = dropdown(window=frame,values=ftypes,width=120,height=30,call=self.__select_format)
-        button_dest = ttk.Button(master=frame,text="Choose Destination For Format",command=self.__set_format_destination)
-        button_start = ttk.Button(master=frame,text="Start",command=self.__run_monitor)
-        button_stop = ttk.Button(master=frame,text="Stop",command=self.__kill_thread)
-        button_dir.pack(pady=10)
-        button_dest.pack(pady=10)
-        button_start.pack(pady=10)
-        button_stop.pack(pady=10)
-        dp.pack()
+        centered.place(relx=0.5,rely=0.5,anchor='center')
+        button_dir.pack(pady=20)
+        flex_frame.pack(pady=20)
+        dp.pack(side="left")
+        button_dest.pack(pady=20,side="left")
+        button_start.pack(pady=20)
+        button_stop.pack(pady=20)
     
     def __gen_contents(self,frame):
         # Genetate contents that display
