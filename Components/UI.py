@@ -33,7 +33,7 @@ class CustomTable(ctk.CTkScrollableFrame):
             
 
         
-class TableRow(ctk.CTKFrame):
+class TableRow(ctk.CTkFrame):
     
     def __init__(self,table:CustomTable,values:list[str],rel_widths:list[float],titles:bool=False):
         super().__init__(table)
