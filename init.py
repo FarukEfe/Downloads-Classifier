@@ -26,8 +26,8 @@ class App:
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
-        #ctk.set_appearance_mode("dark")
-        #ctk.set_default_color_theme("blue")
+        ctk.set_appearance_mode("Dark")
+        ctk.set_default_color_theme("blue")
         self.event = Event() # Handle monitor thread
         # Tk window specs
         self.window.title("Downloads Classifier")
@@ -60,8 +60,8 @@ class App:
     def __gen_buttons(self,frame):
         centered = ctk.CTkFrame(master=frame)
         flex_frame = ctk.CTkFrame(master=centered)
-        button_dir = ctk.CTkButton(master=centered,text="Choose Downloads Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
-        button_dest = ctk.CTkButton(master=flex_frame,text="Choose Destination For Format",command=self.__set_format_destination)
+        button_dir = ctk.CTkButton(master=centered,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
+        button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
         dp = dropdown(window=flex_frame,values=ftypes,width=120,height=30,call=self.__select_format)
         button_start = ctk.CTkButton(master=centered,text="Start",command=self.__run_monitor)
         button_stop = ctk.CTkButton(master=centered,text="Stop",command=self.__kill_thread)
@@ -70,8 +70,8 @@ class App:
         centered.place(relx=0.5,rely=0.5,anchor='center')
         button_dir.pack(pady=20)
         flex_frame.pack(pady=20)
-        dp.pack(side="left")
-        button_dest.pack(pady=20,side="left")
+        dp.pack(side="left",padx=10)
+        button_dest.pack(padx=10,side="left")
         button_start.pack(pady=20)
         button_stop.pack(pady=20)
     
