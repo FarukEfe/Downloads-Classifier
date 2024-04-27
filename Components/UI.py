@@ -15,31 +15,31 @@ class CustomButton(ctk.CTkButton):
 
 # Design Custom Table
     
-class CustomTableTwo(ctk.CTkScrollableFrame):
+class CustomTable(ctk.CTkScrollableFrame):
 
     def __init__(self,window:ctk.CTkFrame,rel_widths:tuple[float],dest:dict[str:str]):
         super().__init__(window)
         # Generate Tables from Lists
-        key_list = dest.keys()
+        key_list = list(dest.keys())
         row_len = len(key_list)
         for i in range(row_len):
             key = key_list[i]
             value = dest[key]
             new = TableRow(self,[key,value],rel_widths)
             new.pack(side="top")
-            
-
         
 class TableRow(ctk.CTkFrame):
     
-    def __init__(self,table:CustomTableTwo,values:list[str],rel_widths:tuple[float]):
+    def __init__(self,table:CustomTable,values:list[str],rel_widths:tuple[float]):
         super().__init__(table)
         limit = min(len(rel_widths),len(values)) # Limit iteration to shorter list
+        offset = 0
         for i in range(limit):
-            cell = ctk.CTkFrame(master=self,relwidth=rel_widths[i])
+            cell = ctk.CTkFrame(master=self)
             text = ctk.CTkLabel(master=cell,text=values[i],anchor="center")
-            cell.pack(side="left")
+            cell.place(relx=offset+rel_widths[i]/2,relwidth=rel_widths[i],anchor="center")
             text.pack(side="top")
+            offset += rel_widths[i]
         
 # Dropdown Menu
 

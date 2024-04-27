@@ -62,22 +62,22 @@ class App:
         flex_frame = ctk.CTkFrame(master=centered)
         button_dir = ctk.CTkButton(master=centered,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
-        dp = dropdown(window=flex_frame,values=ftypes,width=120,height=30,call=self.__select_format)
+        dp = dropdown(window=flex_frame,values=ftypes,width=100,height=25,call=self.__select_format)
         button_start = ctk.CTkButton(master=centered,text="Start",command=self.__run_monitor)
         button_stop = ctk.CTkButton(master=centered,text="Stop",command=self.__kill_thread)
         # Generate buttons, input fields & assign tasks
         # Dropdown that associates with destination button
         centered.place(relx=0.5,rely=0.5,anchor='center')
         button_dir.pack(pady=20)
-        flex_frame.pack(pady=20)
         dp.pack(side="left",padx=10)
         button_dest.pack(padx=10,side="left")
+        flex_frame.pack(pady=20)
         button_start.pack(pady=20)
         button_stop.pack(pady=20)
     
     def __gen_contents(self,frame):
-        dest = self.monitor.dest_handler.data
-        table = CustomTableTwo(frame,(0.2,0.6),dest)
+        values = self.monitor.dest_handler.data
+        table = CustomTable(frame,(0.2,0.6),values)
         table.pack(side="top")
         # Genetate contents that display
         # Should display monitoring file
