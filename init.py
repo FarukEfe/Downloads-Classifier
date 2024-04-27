@@ -4,7 +4,7 @@
 # Internal Modules
 from Monitor import Monitor
 from Workers.Subprocess import Subprocess
-from Helpers import *
+from Helpers.Helpers import *
 # Design Libraries
 import tkinter as tk
 from tkinter import ttk
@@ -76,6 +76,9 @@ class App:
         button_stop.pack(pady=20)
     
     def __gen_contents(self,frame):
+        dest = self.monitor.dest_handler.data
+        table = CustomTableTwo(frame,(0.2,0.6),dest)
+        table.pack(side="top")
         # Genetate contents that display
         # Should display monitoring file
         # Should display a table of set directories for file types
