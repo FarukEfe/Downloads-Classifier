@@ -19,10 +19,13 @@ class App:
     monitor = Monitor() # This class starts monitoring the downloads
     process = Subprocess() # This class opens a file dialog for directory selection
     selected_format = "pdf"
+
+    # View Controllers
     on = False
-    
-    # User Feedback
     destination_feeback = False
+
+    # UI for Update
+    config_table: CustomTable = None
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
@@ -34,6 +37,11 @@ class App:
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
 
     # Internal Calls
+    def __config_table(self):
+        if self.config_table == None:
+            return
+        self.config_table.config(self.monitor.dest_handler.data)
+
     def __select_format(self,choice):
         self.selected_format = choice
     
@@ -42,6 +50,8 @@ class App:
         if os.path.exists(target) and os.path.isdir(target):
             self.monitor.dest_handler.set_destination(self.selected_format,target)
             self.destination_feeback = False
+            print(self.monitor.dest_handler.data,len(self.config_table.rows))
+            self.__config_table()
             return
         self.destination_feeback = True
     
@@ -78,6 +88,7 @@ class App:
     def __gen_contents(self,frame):
         values = self.monitor.dest_handler.data
         table = CustomTable(frame,(0.2,0.6),values)
+        self.config_table = table
         table.pack(side="top")
         # Genetate contents that display
         # Should display monitoring file

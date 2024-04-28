@@ -19,14 +19,35 @@ class CustomTable(ctk.CTkScrollableFrame):
 
     def __init__(self,window:ctk.CTkFrame,rel_widths:tuple[float],dest:dict[str:str]):
         super().__init__(window)
+        self.rows: list[TableRow] = []
+        self.widths = rel_widths
         # Generate Tables from Lists
         key_list = list(dest.keys())
         row_len = len(key_list)
         for i in range(row_len):
             key = key_list[i]
             value = dest[key]
-            new = TableRow(self,[key,value],rel_widths)
+            new = TableRow(self,[key,value],self.widths)
+            self.rows.append(new)
             new.pack(side="top")
+        
+    def config(self,dest:dict[str:str]):
+        self.__unpack()
+        self.rows = []
+        # Generate Tables from Lists
+        key_list = list(dest.keys())
+        row_len = len(key_list)
+        for i in range(row_len):
+            key = key_list[i]
+            value = dest[key]
+            new = TableRow(self,[key,value],self.widths)
+            self.rows.append(new)
+            new.pack(side="top")
+    
+    def __unpack(self):
+        for row in self.rows:
+            row.destroy()
+
         
 class TableRow(ctk.CTkFrame):
     
