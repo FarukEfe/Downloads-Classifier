@@ -42,12 +42,11 @@ class CustomTable(ctk.CTkScrollableFrame):
             value = dest[key]
             new = TableRow(self,[key,value],self.widths)
             self.rows.append(new)
-            new.pack(side="top")
+            new.pack(side="top",fill="x")
     
     def __unpack(self):
         for row in self.rows:
             row.destroy()
-
         
 class TableRow(ctk.CTkFrame):
     
@@ -61,6 +60,20 @@ class TableRow(ctk.CTkFrame):
             cell.place(relx=offset+rel_widths[i]/2,relwidth=rel_widths[i],anchor="center")
             text.pack(side="top")
             offset += rel_widths[i]
+
+class DropList(ctk.CTkFrame):
+    
+    def __init__(self,master:ctk.CTkFrame,values:list[str]):
+        super().__init__(master)
+        # Define all rows
+    
+    # Configure rows
+    def config(self,new_values:list[str]):
+        pass
+
+    # Unpack all rows
+    def __unpack(self):
+        pass
         
 # Dropdown Menu
 

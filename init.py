@@ -26,6 +26,7 @@ class App:
 
     # UI for Update
     config_table: CustomTable = None
+    config_directory: ctk.CTkLabel = None
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
@@ -41,6 +42,11 @@ class App:
         if self.config_table == None:
             return
         self.config_table.config(self.monitor.dest_handler.data)
+    
+    def __config_directory(self):
+        if self.config_directory == None:
+            return
+        self.config_directory.configure(text=self.monitor.directory)
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -50,7 +56,6 @@ class App:
         if os.path.exists(target) and os.path.isdir(target):
             self.monitor.dest_handler.set_destination(self.selected_format,target)
             self.destination_feeback = False
-            print(self.monitor.dest_handler.data,len(self.config_table.rows))
             self.__config_table()
             return
         self.destination_feeback = True
@@ -58,6 +63,7 @@ class App:
     def __set_monitor_file(self):
         folder = self.process.ask_user_folder()
         self.monitor.set_directory(folder)
+        self.__config_directory()
     
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
@@ -86,15 +92,20 @@ class App:
         button_stop.pack(pady=20)
     
     def __gen_contents(self,frame):
+        # Generate monitor directory text
+        monitor_frame = ctk.CTkFrame(frame)
+        monitor_text = ctk.CTkLabel(monitor_frame,text=self.monitor.directory,anchor="center")
+        monitor_frame.pack(pady=10,padx=10,side="top",fill="x")
+        monitor_text.pack()
+        self.config_directory = monitor_text
+        # Generate format and directories table
         values = self.monitor.dest_handler.data
-        table = CustomTable(frame,(0.2,0.6),values)
+        table = CustomTable(frame,(0.2,0.8),values)
         self.config_table = table
-        table.pack(side="top")
-        # Genetate contents that display
-        # Should display monitoring file
-        # Should display a table of set directories for file types
-        # Should display if watchdog is running
-        pass
+        table.pack(pady=10,padx=10,side="top",fill="x")
+        # Generate recent jobs finished
+        jobs_list = DropList(frame,["lolol","ahhahahhahhhha"])
+        jobs_list.pack(pady=10,padx=10,side="top",fill="x")
     
     # Back-end Operations
     def __kill_thread(self):
