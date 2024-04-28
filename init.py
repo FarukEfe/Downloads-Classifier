@@ -1,6 +1,3 @@
-# User Interface gathers the directories as user input to deterine where to classify each file type
-# Holds class called Settings that holds a dictionary of file types and their destination
-# As well as if the program should or should not ignore suspicious files
 # Internal Modules
 from Monitor import Monitor
 from Workers.Subprocess import Subprocess
@@ -74,22 +71,30 @@ class App:
         return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
-        centered = ctk.CTkFrame(master=frame)
-        flex_frame = ctk.CTkFrame(master=centered)
-        button_dir = ctk.CTkButton(master=centered,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
+        # Upper frame
+        upper = ctk.CTkFrame(master=frame)
+        flex_frame = ctk.CTkFrame(master=upper)
+        dir_frame = ctk.CTkFrame(master=upper)
+        button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
         dp = dropdown(window=flex_frame,values=ftypes,width=100,height=25,call=self.__select_format)
-        button_start = ctk.CTkButton(master=centered,text="Start",command=self.__run_monitor)
-        button_stop = ctk.CTkButton(master=centered,text="Stop",command=self.__kill_thread)
-        # Generate buttons, input fields & assign tasks
-        # Dropdown that associates with destination button
-        centered.place(relx=0.5,rely=0.5,anchor='center')
-        button_dir.pack(pady=20)
-        dp.pack(side="left",padx=10)
-        button_dest.pack(padx=10,side="left")
-        flex_frame.pack(pady=20)
-        button_start.pack(pady=20)
-        button_stop.pack(pady=20)
+        # Start frame
+        start = ctk.CTkFrame(master=frame)
+        start_flex = ctk.CTkFrame(master=start)
+        button_start = ctk.CTkButton(master=start_flex,text="Start",width=120,command=self.__run_monitor)
+        button_stop = ctk.CTkButton(master=start_flex,text="Stop",width=120,command=self.__kill_thread)
+        # Pack Upper Frame
+        upper.pack(side="top")
+        dir_frame.pack(pady=10,fill="x")
+        button_dir.pack(side="right")
+        button_dest.pack(side="right")
+        dp.pack(side="right",padx=15)
+        flex_frame.pack(pady=10)
+        # Pack Buttons
+        start.pack(side="top",pady=20)
+        start_flex.pack(padx=10)
+        button_stop.pack(side="right",padx=7)
+        button_start.pack(side="right",padx=7)
     
     def __gen_contents(self,frame):
         # Generate monitor directory text
@@ -100,7 +105,7 @@ class App:
         self.config_directory = monitor_text
         # Generate format and directories table
         values = self.monitor.dest_handler.data
-        table = CustomTable(frame,(0.2,0.8),values)
+        table = CustomTable(frame,(0.1,0.9),values)
         self.config_table = table
         table.pack(pady=10,padx=10,side="top",fill="x")
         # Generate recent jobs finished
@@ -148,3 +153,8 @@ class App:
 if __name__ == '__main__':
     app = App()
     app.runApp()
+
+# Fix Inner Scrollbar Padding
+# Make transparent backgrounds for frames in buttons_content
+# Conditionally enable/disable start/stop buttons
+# Make a text that shows the program is running

@@ -18,7 +18,7 @@ class CustomButton(ctk.CTkButton):
 class CustomTable(ctk.CTkScrollableFrame):
 
     def __init__(self,window:ctk.CTkFrame,rel_widths:tuple[float],dest:dict[str:str]):
-        super().__init__(window)
+        super().__init__(window,orientation="vertical")
         self.rows: list[TableRow] = []
         self.widths = rel_widths
         # Generate Tables from Lists
@@ -29,7 +29,7 @@ class CustomTable(ctk.CTkScrollableFrame):
             value = dest[key]
             new = TableRow(self,[key,value],self.widths)
             self.rows.append(new)
-            new.pack(side="top")
+            new.pack(side="top",fill="x",pady=0)
         
     def config(self,dest:dict[str:str]):
         self.__unpack()
@@ -42,7 +42,7 @@ class CustomTable(ctk.CTkScrollableFrame):
             value = dest[key]
             new = TableRow(self,[key,value],self.widths)
             self.rows.append(new)
-            new.pack(side="top",fill="x")
+            new.pack(side="top",fill="x",pady=0)
     
     def __unpack(self):
         for row in self.rows:
@@ -51,7 +51,7 @@ class CustomTable(ctk.CTkScrollableFrame):
 class DropList(ctk.CTkScrollableFrame):
     
     def __init__(self,master:ctk.CTkFrame,values:list[str],width:float):
-        super().__init__(master)
+        super().__init__(master,orientation="vertical")
         self.rows: list[TableRow] = []
         self.width = width
         # Generate Tables from Lists
@@ -60,7 +60,7 @@ class DropList(ctk.CTkScrollableFrame):
             text = values[i]
             new = TableRow(self,[text],[width])
             self.rows.append(new)
-            new.pack(side="top",fill="x")
+            new.pack(side="top",fill="x",pady=0)
         
     # Configure rows
     def config(self,new_values:list[str]):
@@ -71,7 +71,7 @@ class DropList(ctk.CTkScrollableFrame):
             text = new_values[i]
             new = TableRow(self,[text],[self.width])
             self.rows.append(new)
-            new.pack(side="top",fill="x")
+            new.pack(side="top",fill="x",pady=0)
 
     # Unpack all rows
     def __unpack(self):
