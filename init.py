@@ -104,8 +104,8 @@ class App:
         self.config_table = table
         table.pack(pady=10,padx=10,side="top",fill="x")
         # Generate recent jobs finished
-        jobs_list = DropList(frame,["lolol","ahhahahhahhhha"])
-        jobs_list.pack(pady=10,padx=10,side="top",fill="x")
+        jobs_list = DropList(frame,["lolol","ahhahahhahhhha"],1.0)
+        jobs_list.pack(pady=10,padx=10,side="top",fill="both")
     
     # Back-end Operations
     def __kill_thread(self):

@@ -47,6 +47,36 @@ class CustomTable(ctk.CTkScrollableFrame):
     def __unpack(self):
         for row in self.rows:
             row.destroy()
+
+class DropList(ctk.CTkScrollableFrame):
+    
+    def __init__(self,master:ctk.CTkFrame,values:list[str],width:float):
+        super().__init__(master)
+        self.rows: list[TableRow] = []
+        self.width = width
+        # Generate Tables from Lists
+        row_len = len(values)
+        for i in range(row_len):
+            text = values[i]
+            new = TableRow(self,[text],[width])
+            self.rows.append(new)
+            new.pack(side="top",fill="x")
+        
+    # Configure rows
+    def config(self,new_values:list[str]):
+        self.__unpack()
+        self.rows = []
+        row_len = len(new_values)
+        for i in range(row_len):
+            text = new_values[i]
+            new = TableRow(self,[text],[self.width])
+            self.rows.append(new)
+            new.pack(side="top",fill="x")
+
+    # Unpack all rows
+    def __unpack(self):
+        for row in self.rows:
+            row.destroy()
         
 class TableRow(ctk.CTkFrame):
     
@@ -55,25 +85,11 @@ class TableRow(ctk.CTkFrame):
         limit = min(len(rel_widths),len(values)) # Limit iteration to shorter list
         offset = 0
         for i in range(limit):
-            cell = ctk.CTkFrame(master=self)
+            cell = ctk.CTkFrame(master=self,height=56)
             text = ctk.CTkLabel(master=cell,text=values[i],anchor="center")
             cell.place(relx=offset+rel_widths[i]/2,relwidth=rel_widths[i],anchor="center")
-            text.pack(side="top")
+            text.place(x=10,rely=0.5)
             offset += rel_widths[i]
-
-class DropList(ctk.CTkFrame):
-    
-    def __init__(self,master:ctk.CTkFrame,values:list[str]):
-        super().__init__(master)
-        # Define all rows
-    
-    # Configure rows
-    def config(self,new_values:list[str]):
-        pass
-
-    # Unpack all rows
-    def __unpack(self):
-        pass
         
 # Dropdown Menu
 
