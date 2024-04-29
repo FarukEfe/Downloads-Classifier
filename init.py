@@ -24,6 +24,8 @@ class App:
     # UI for Update
     config_table: CustomTable = None
     config_directory: ctk.CTkLabel = None
+    config_start: ctk.CTkButton = None
+    config_stop: ctk.CTkButton = None
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
@@ -44,6 +46,10 @@ class App:
         if self.config_directory == None:
             return
         self.config_directory.configure(text=self.monitor.directory)
+    
+    def __config_buttons(self):
+        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.on else "blue"))
+        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.on else "grey"))
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -80,8 +86,22 @@ class App:
         dp = dropdown(window=flex_frame,values=ftypes,width=100,height=25,call=self.__select_format)
         # Start frame
         start = ctk.CTkFrame(master=frame,fg_color="transparent")
-        button_start = ctk.CTkButton(master=start,text="Start",width=120,command=self.__run_monitor)
-        button_stop = ctk.CTkButton(master=start,text="Stop",width=120,command=self.__kill_thread)
+        button_start = ctk.CTkButton(
+                master=start,
+                text="Start",
+                width=120,
+                fg_color=("blue"),
+                command=self.__run_monitor
+            )
+        button_stop = ctk.CTkButton(
+                master=start,
+                text="Stop",
+                width=120,
+                fg_color="grey",
+                command=self.__kill_thread
+            )
+        self.config_start = button_start
+        self.config_stop = button_stop
         # Pack Upper Frame
         upper.pack(side="top")
         dir_frame.pack(pady=10,fill="x")
@@ -112,16 +132,23 @@ class App:
     
     # Back-end Operations
     def __kill_thread(self):
+        if not self.on:
+            return
         self.event.set()
+        print("Stopped listening")
 
-    def __monitor_mainloop(self,event:Event):
+    def __monitor_mainloop(self):
+        
         self.monitor.start()
         try:
             while self.monitor.is_alive():
+                print("Running...")
                 # If stop command is given from outside the thread,
                 # kill the monitor thread
-                if event.is_set():
-                    event.clear()
+                if self.event.is_set():
+                    self.event.clear()
+                    self.on = False
+                    self.__config_buttons()
                     break
                 remove_keys = []
                 for key in self.monitor.queue.keys(): # Iterate through all keys
@@ -137,8 +164,13 @@ class App:
     # Before this code runs, you have to make sure that files have a destination
     # The code wouldn't crash either way, but why run something when it serves no purpose
     def __run_monitor(self):
-        t = Thread(target=self.__monitor_mainloop,args=(self.event,))
+        if self.on:
+            return
+        t = Thread(target=self.__monitor_mainloop)
         t.start()
+        self.on = True
+        self.__config_buttons()
+        print("Started listening...")
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop
@@ -152,6 +184,7 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Conditionally enable/disable start/stop buttons
 # Make a text that shows the program is running
+# Complete Logging of Finished Jobs
+# Threads can only be started once, destroy old one and make new thread when re-starting
 # Resize window adjustments

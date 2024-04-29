@@ -66,10 +66,10 @@ class Monitor:
         return self.observer.is_alive()
     
     def join(self, timeout: float):
-        monitor.observer.join(timeout)
+        self.observer.join(timeout)
     
     def stop(self):
-        monitor.observer.stop()
+        self.observer.stop()
     
     def delete_keys(self, keys: list[str]):
         for key in keys:
