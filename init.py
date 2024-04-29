@@ -28,6 +28,7 @@ class App:
     config_stop: ctk.CTkButton = None
 
     # Event Handler for Thread
+    thread: Thread = None
     event: Event = Event()
 
     def __init__(self):
@@ -137,20 +138,19 @@ class App:
         if not self.on:
             return
         self.event.set()
-        print("Stopped listening")
+        print("Stopped listening.")
 
     def __monitor_mainloop(self):
         
         self.monitor.start()
         try:
             while self.monitor.is_alive():
-                print("Running...")
+                print("Running...",end="\r")
                 # If stop command is given from outside the thread,
                 # kill the monitor thread
                 if self.event.is_set():
                     self.event.clear()
                     self.on = False
-                    self.__config_buttons()
                     break
                 remove_keys = []
                 for key in self.monitor.queue.keys(): # Iterate through all keys
@@ -162,7 +162,8 @@ class App:
         finally:
             self.monitor.stop()
             self.monitor.join(0)
-            print("Thread execution over.")
+            self.__config_buttons()
+            print("Thread execution over. Configuration complete.")
             
     # Before this code runs, you have to make sure that files have a destination
     # The code wouldn't crash either way, but why run something when it serves no purpose
@@ -171,15 +172,12 @@ class App:
             print("Program running or double-check the satisfying criteria for the monitor runtime.")
             return
         # Define & Start Thread
-        t = Thread(target=self.__monitor_mainloop)
-        t.start()
+        self.thread = Thread(target=self.__monitor_mainloop,daemon=True)
+        self.thread.start()
         # Listen for thread to finish (end of code of exception)
-        #t.join() # Crashes Program
         # Change View Model and Configurate Buttons
         self.on = True
         self.__config_buttons()
-        # Log
-        print("Started listening...")
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop
