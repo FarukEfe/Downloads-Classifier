@@ -40,6 +40,12 @@ class Monitor:
         self.event_handler: FileSystemEventHandler = None
         self.dest_handler = DestinationHandler()
 
+    def list_finished_jobs(self) -> list[str]:
+        texts = []
+        for key in list(self.finished.keys()):
+            texts.append(f"{key} moved to {self.finished[key]}")
+        return texts
+
     def set_directory(self,directory):
         self.directory = directory
 

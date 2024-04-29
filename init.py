@@ -53,8 +53,8 @@ class App:
         self.config_directory.configure(text=self.monitor.directory)
     
     def __config_buttons(self):
-        self.config_start.configure(require_redraw=True,fg_color=("yellow" if self.on else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
-        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.t_run else "grey"))
+        self.config_start.configure(require_redraw=True,fg_color=("yellow" if self.on else "grey" if self.t_complete else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
+        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.t_run else "green" if self.t_complete else "grey"))
 
     def __select_format(self,choice):
         self.selected_format = choice
