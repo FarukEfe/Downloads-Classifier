@@ -29,7 +29,7 @@ class CustomTable(ctk.CTkScrollableFrame):
             value = dest[key]
             new = TableRow(self,[key,value],self.widths)
             self.rows.append(new)
-            new.pack(side="top",fill="x",pady=0)
+            new.pack(side="top",fill="x")
         
     def config(self,dest:dict[str:str]):
         self.__unpack()
@@ -42,7 +42,7 @@ class CustomTable(ctk.CTkScrollableFrame):
             value = dest[key]
             new = TableRow(self,[key,value],self.widths)
             self.rows.append(new)
-            new.pack(side="top",fill="x",pady=0)
+            new.pack(side="top",fill="x")
     
     def __unpack(self):
         for row in self.rows:
@@ -80,15 +80,17 @@ class DropList(ctk.CTkScrollableFrame):
         
 class TableRow(ctk.CTkFrame):
     
-    def __init__(self,table:CustomTable,values:list[str],rel_widths:tuple[float]):
-        super().__init__(table)
+    def __init__(self,table:ctk.CTkScrollableFrame,values:list[str],rel_widths:tuple[float]):
+        super().__init__(table,height=40)
         limit = min(len(rel_widths),len(values)) # Limit iteration to shorter list
         offset = 0
         for i in range(limit):
-            cell = ctk.CTkFrame(master=self,height=56)
+            cell = ctk.CTkFrame(master=self,border_width=2,border_color="white")
             text = ctk.CTkLabel(master=cell,text=values[i],anchor="center")
-            cell.place(relx=offset+rel_widths[i]/2,relwidth=rel_widths[i],anchor="center")
-            text.place(x=10,rely=0.5)
+            cell.place(rely=0.5,relx=offset,relwidth=rel_widths[i],anchor=ctk.W)
+            #cell.pack(side="left",fill="x")
+            #cell.grid(row=i,sticky=ctk.W)
+            text.place(x=10,rely=0.5,anchor=ctk.W)
             offset += rel_widths[i]
         
 # Dropdown Menu

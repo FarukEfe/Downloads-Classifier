@@ -154,7 +154,6 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Fix Inner Scrollbar Padding
 # Make transparent backgrounds for frames in buttons_content
 # Conditionally enable/disable start/stop buttons
 # Make a text that shows the program is running
