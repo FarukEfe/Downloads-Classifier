@@ -32,6 +32,7 @@ class CustomHandler(FileSystemEventHandler):
 class Monitor:
 
     queue: dict[str:str] = {}
+    finished: dict[str:str] = {}
 
     def __init__(self):
         self.directory = None
@@ -77,9 +78,12 @@ class Monitor:
     
     def delete_keys(self, keys: list[str]):
         for key in keys:
+            self.finished[key] = self.queue[key]
             del self.queue[key]
-
-
+    
+    def flush_jobs(self):
+        self.finished = {}
+        self.queue = {}
 
 if __name__ == "__main__":
     process = Subprocess()

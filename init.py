@@ -29,6 +29,8 @@ class App:
 
     # Event Handler for Thread
     thread: Thread = None
+    t_run: bool = False
+    t_complete: bool = False
     event: Event = Event()
 
     def __init__(self):
@@ -51,8 +53,8 @@ class App:
         self.config_directory.configure(text=self.monitor.directory)
     
     def __config_buttons(self):
-        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.on else "blue"))
-        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.on else "grey"))
+        self.config_start.configure(require_redraw=True,fg_color=("yellow" if self.on else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
+        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.t_run else "grey"))
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -93,7 +95,7 @@ class App:
                 master=start,
                 text="Start",
                 width=120,
-                fg_color=("blue"),
+                fg_color="blue",
                 command=self.__run_monitor
             )
         button_stop = ctk.CTkButton(
@@ -135,8 +137,6 @@ class App:
     
     # Back-end Operations
     def __kill_thread(self):
-        if not self.on:
-            return
         self.event.set()
         print("Stopped listening.")
 
@@ -145,11 +145,16 @@ class App:
         self.monitor.start()
         try:
             while self.monitor.is_alive():
+                if not self.on:
+                    print("Waiting",end="\r")
+                    continue
                 print("Running...",end="\r")
                 # If stop command is given from outside the thread,
                 # kill the monitor thread
                 if self.event.is_set():
                     self.event.clear()
+                    self.t_complete = True
+                    self.t_run = False
                     self.on = False
                     break
                 remove_keys = []
@@ -168,12 +173,25 @@ class App:
     # Before this code runs, you have to make sure that files have a destination
     # The code wouldn't crash either way, but why run something when it serves no purpose
     def __run_monitor(self):
-        if self.on or not self.monitor.can_start():
-            print("Program running or double-check the satisfying criteria for the monitor runtime.")
+
+        if not self.monitor.can_start():
+            print("Make sure you have a monitoring directory selected.")
             return
+        
+        if self.t_complete:
+            print("Once a session is over, you have to close the tab that is dedicated to it an re-run the program.")
+            return
+
+        if self.t_run:
+            print("Program already running. Toggling pause")
+            self.on = not self.on
+            self.__config_buttons()
+            return
+
         # Define & Start Thread
         self.thread = Thread(target=self.__monitor_mainloop,daemon=True)
         self.thread.start()
+        self.t_run = True
         # Listen for thread to finish (end of code of exception)
         # Change View Model and Configurate Buttons
         self.on = True
@@ -193,5 +211,4 @@ if __name__ == '__main__':
 
 # Make a text that shows the program is running
 # Complete Logging of Finished Jobs
-# Threads can only be started once, destroy old one and make new thread when re-starting
 # Resize window adjustments
