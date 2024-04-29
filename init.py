@@ -27,11 +27,13 @@ class App:
     config_start: ctk.CTkButton = None
     config_stop: ctk.CTkButton = None
 
+    # Event Handler for Thread
+    event: Event = Event()
+
     def __init__(self):
         self.window = ctk.CTk() # Main window
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("blue")
-        self.event = Event() # Handle monitor thread
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
@@ -160,16 +162,23 @@ class App:
         finally:
             self.monitor.stop()
             self.monitor.join(0)
+            print("Thread execution over.")
             
     # Before this code runs, you have to make sure that files have a destination
     # The code wouldn't crash either way, but why run something when it serves no purpose
     def __run_monitor(self):
-        if self.on:
+        if self.on or not self.monitor.can_start():
+            print("Program running or double-check the satisfying criteria for the monitor runtime.")
             return
+        # Define & Start Thread
         t = Thread(target=self.__monitor_mainloop)
         t.start()
+        # Listen for thread to finish (end of code of exception)
+        #t.join() # Crashes Program
+        # Change View Model and Configurate Buttons
         self.on = True
         self.__config_buttons()
+        # Log
         print("Started listening...")
 
     def runApp(self):

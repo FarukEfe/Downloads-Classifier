@@ -64,6 +64,10 @@ class Monitor:
     # Return if watchdog observer is running
     def is_alive(self):
         return self.observer.is_alive()
+
+    # Check if the monitor can start
+    def can_start(self):
+        return self.directory != None and os.path.exists(self.directory) and os.path.isdir(self.directory)
     
     def join(self, timeout: float):
         self.observer.join(timeout)
