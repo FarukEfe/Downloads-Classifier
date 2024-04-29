@@ -85,7 +85,8 @@ class TableRow(ctk.CTkFrame):
         limit = min(len(rel_widths),len(values)) # Limit iteration to shorter list
         offset = 0
         for i in range(limit):
-            cell = ctk.CTkFrame(master=self,border_width=2,border_color="white")
+            # Border (not working intended): ,border_width=2,border_color="white"
+            cell = ctk.CTkFrame(master=self)
             text = ctk.CTkLabel(master=cell,text=values[i],anchor="center")
             cell.place(rely=0.5,relx=offset,relwidth=rel_widths[i],anchor=ctk.W)
             #cell.pack(side="left",fill="x")

@@ -72,17 +72,16 @@ class App:
     
     def __gen_buttons(self,frame):
         # Upper frame
-        upper = ctk.CTkFrame(master=frame)
-        flex_frame = ctk.CTkFrame(master=upper)
-        dir_frame = ctk.CTkFrame(master=upper)
+        upper = ctk.CTkFrame(master=frame,fg_color="transparent")
+        flex_frame = ctk.CTkFrame(master=upper,fg_color="transparent")
+        dir_frame = ctk.CTkFrame(master=upper,fg_color="transparent")
         button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
         dp = dropdown(window=flex_frame,values=ftypes,width=100,height=25,call=self.__select_format)
         # Start frame
-        start = ctk.CTkFrame(master=frame)
-        start_flex = ctk.CTkFrame(master=start)
-        button_start = ctk.CTkButton(master=start_flex,text="Start",width=120,command=self.__run_monitor)
-        button_stop = ctk.CTkButton(master=start_flex,text="Stop",width=120,command=self.__kill_thread)
+        start = ctk.CTkFrame(master=frame,fg_color="transparent")
+        button_start = ctk.CTkButton(master=start,text="Start",width=120,command=self.__run_monitor)
+        button_stop = ctk.CTkButton(master=start,text="Stop",width=120,command=self.__kill_thread)
         # Pack Upper Frame
         upper.pack(side="top")
         dir_frame.pack(pady=10,fill="x")
@@ -91,10 +90,9 @@ class App:
         dp.pack(side="right",padx=15)
         flex_frame.pack(pady=10)
         # Pack Buttons
-        start.pack(side="top",pady=20)
-        start_flex.pack(padx=10)
-        button_stop.pack(side="right",padx=7)
-        button_start.pack(side="right",padx=7)
+        start.pack(side="top",fill="x",pady=(210,0),padx=25)
+        button_stop.pack(side="right",padx=(8,0))
+        button_start.pack(side="right",padx=(0,8))
     
     def __gen_contents(self,frame):
         # Generate monitor directory text
@@ -154,6 +152,6 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Make transparent backgrounds for frames in buttons_content
 # Conditionally enable/disable start/stop buttons
 # Make a text that shows the program is running
+# Resize window adjustments
