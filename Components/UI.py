@@ -54,6 +54,7 @@ class DropList(ctk.CTkScrollableFrame):
         super().__init__(master,orientation="vertical")
         self.rows: list[TableRow] = []
         self.width = width
+        self.values = values
         # Generate Tables from Lists
         row_len = len(values)
         for i in range(row_len):
@@ -64,6 +65,10 @@ class DropList(ctk.CTkScrollableFrame):
         
     # Configure rows
     def config(self,new_values:list[str]):
+        if not self.__should_config(new_values):
+            print("No need to configurate")
+            return
+        print("Configuration needed.",end="\r")
         self.__unpack()
         self.rows = []
         row_len = len(new_values)
@@ -73,6 +78,9 @@ class DropList(ctk.CTkScrollableFrame):
             self.rows.append(new)
             new.pack(side="top",fill="x",pady=0)
 
+    def __should_config(self,new_vals:list[str]) -> bool:
+        return len(new_vals) != len(self.values)
+        
     # Unpack all rows
     def __unpack(self):
         for row in self.rows:

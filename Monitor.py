@@ -86,7 +86,7 @@ class Monitor:
         for key in keys:
             self.finished[key] = self.queue[key]
             del self.queue[key]
-    
+            
     def flush_logs(self):
         self.finished = {}
     
