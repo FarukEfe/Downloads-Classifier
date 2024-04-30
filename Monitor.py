@@ -87,8 +87,10 @@ class Monitor:
             self.finished[key] = self.queue[key]
             del self.queue[key]
     
-    def flush_jobs(self):
+    def flush_logs(self):
         self.finished = {}
+    
+    def flush_jobs(self):
         self.queue = {}
 
 if __name__ == "__main__":

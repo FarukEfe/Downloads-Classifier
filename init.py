@@ -22,6 +22,7 @@ class App:
     destination_feeback = False
 
     # UI for Update
+    config_logs: DropList = None
     config_table: CustomTable = None
     config_directory: ctk.CTkLabel = None
     config_start: ctk.CTkButton = None
@@ -42,6 +43,11 @@ class App:
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
 
     # Internal Calls
+    def __config_jobs(self):
+        if self.config_logs == None:
+            return
+        self.config_logs.config(self.monitor.list_finished_jobs())
+
     def __config_table(self):
         if self.config_table == None:
             return
@@ -53,8 +59,8 @@ class App:
         self.config_directory.configure(text=self.monitor.directory)
     
     def __config_buttons(self):
-        self.config_start.configure(require_redraw=True,fg_color=("yellow" if self.on else "grey" if self.t_complete else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
-        self.config_stop.configure(require_redraw=True,fg_color=("red" if self.t_run else "green" if self.t_complete else "grey"))
+        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.t_complete else "yellow" if self.on else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
+        self.config_stop.configure(require_redraw=True,fg_color=("green" if self.t_complete else "red" if self.t_run else "grey"))
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -132,7 +138,8 @@ class App:
         self.config_table = table
         table.pack(pady=10,padx=10,side="top",fill="x")
         # Generate recent jobs finished
-        jobs_list = DropList(frame,["lolol","ahhahahhahhhha"],1.0)
+        jobs_list = DropList(frame,[],1.0)
+        self.config_logs = jobs_list
         jobs_list.pack(pady=10,padx=10,side="top",fill="both")
     
     # Back-end Operations
@@ -145,18 +152,22 @@ class App:
         self.monitor.start()
         try:
             while self.monitor.is_alive():
-                if not self.on:
-                    print("Waiting",end="\r")
-                    continue
-                print("Running...",end="\r")
+                # Configurate the logs
+                self.__config_jobs()
                 # If stop command is given from outside the thread,
                 # kill the monitor thread
-                if self.event.is_set():
+                if self.event.is_set(): 
                     self.event.clear()
                     self.t_complete = True
                     self.t_run = False
                     self.on = False
                     break
+
+                if not self.on:
+                    print("Waiting...",end="\r")
+                    continue
+                print("Running...",end="\r")
+
                 remove_keys = []
                 for key in self.monitor.queue.keys(): # Iterate through all keys
                     dest = self.monitor.queue[key] # Get destination
@@ -209,6 +220,6 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Make a text that shows the program is running
-# Complete Logging of Finished Jobs
+# Make a text that shows the program is running -- TODAY
+# Complete Logging of Finished Jobs -- TODAY
 # Resize window adjustments
