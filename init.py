@@ -17,19 +17,17 @@ class App:
     process = Subprocess() # This class opens a file dialog for directory selection
     selected_format = "pdf"
 
-    # View Controllers
-    on = False
-    destination_feeback = False
-
     # UI for Update
     config_logs: DropList = None
     config_table: CustomTable = None
     config_directory: ctk.CTkLabel = None
     config_start: ctk.CTkButton = None
     config_stop: ctk.CTkButton = None
+    config_label: ctk.CTkLabel = None
 
     # Event Handler for Thread
     thread: Thread = None
+    t_on = False
     t_run: bool = False
     t_complete: bool = False
     event: Event = Event()
@@ -41,6 +39,16 @@ class App:
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
+
+    def get_state_label(self) -> str:
+        t = "Standby..."
+        if self.t_on:
+            t = "Running..."
+        elif self.t_run:
+            t = "Paused."
+        elif self.t_complete:
+            t = "Session Over."
+        return t
 
     # Internal Calls
     def __config_jobs(self):
@@ -59,8 +67,15 @@ class App:
         self.config_directory.configure(text=self.monitor.directory)
     
     def __config_buttons(self):
-        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.t_complete else "yellow" if self.on else "blue"),text=("Pause" if self.on else "Continue" if self.t_run else "Start"))
+        if self.config_start == None or self.config_stop == None:
+            return
+        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.t_complete else "yellow" if self.t_on else "blue"),text=("Pause" if self.t_on else "Continue" if self.t_run else "Start"))
         self.config_stop.configure(require_redraw=True,fg_color=("green" if self.t_complete else "red" if self.t_run else "grey"))
+
+    def __config_label(self):
+        if self.config_label == None:
+            return
+        self.config_label.configure(text=self.get_state_label())
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -137,6 +152,12 @@ class App:
         table = CustomTable(frame,(0.1,0.9),values)
         self.config_table = table
         table.pack(pady=10,padx=10,side="top",fill="x")
+        # Text that shows if running
+        thread_frame = ctk.CTkFrame(frame,fg_color="transparent")
+        thread_frame.pack(side="top",fill="x",pady=10)
+        thread_label = ctk.CTkLabel(thread_frame,text="Standby...",font=("Helvetica",20))
+        thread_label.pack(side="left",padx=(20,0))
+        self.config_label = thread_label
         # Generate recent jobs finished
         jobs_list = DropList(frame,[],1.0)
         self.config_logs = jobs_list
@@ -160,10 +181,10 @@ class App:
                     self.event.clear()
                     self.t_complete = True
                     self.t_run = False
-                    self.on = False
+                    self.t_on = False
                     break
 
-                if not self.on:
+                if not self.t_on:
                     print("Waiting...",end="\r")
                     continue
                 print("Running...",end="\r")
@@ -179,6 +200,7 @@ class App:
             self.monitor.stop()
             self.monitor.join(0)
             self.__config_buttons()
+            self.__config_label()
             print("Thread execution over. Configuration complete.")
             
     # Before this code runs, you have to make sure that files have a destination
@@ -195,8 +217,9 @@ class App:
 
         if self.t_run:
             print("Program already running. Toggling pause")
-            self.on = not self.on
+            self.t_on = not self.t_on
             self.__config_buttons()
+            self.__config_label()
             return
 
         # Define & Start Thread
@@ -205,8 +228,9 @@ class App:
         self.t_run = True
         # Listen for thread to finish (end of code of exception)
         # Change View Model and Configurate Buttons
-        self.on = True
+        self.t_on = True
         self.__config_buttons()
+        self.__config_label()
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop
@@ -221,6 +245,15 @@ if __name__ == '__main__':
     app.runApp()
 
 # Figure how to keep track of final amount of files for a format moved to their destination
-# Make a text that shows the program is running
-# Resize window adjustments
 # Better Design Ideas
+
+# DONT CODE WHEN YOU'RE TIRED...
+# Add the branch where duplicate jobs are all done. 
+# Re-write yesterday's data type.
+# Change algorithms accordingly.
+# Remove job removing, instead append all jobs in queue to finished and flush the queue (the logic bug you missed yesterday)
+
+# Resize window adjustments:
+# Start Button shouldn't disappear when shrinking window, instead use flex (or grid) to push them down
+# Upper buttons should be level with lower buttons horizontally
+# User cannot shrink window lower than a certain horizontal value and same for the vertical
