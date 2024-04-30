@@ -220,6 +220,8 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Make a text that shows the program is running -- TODAY
-# Complete Logging of Finished Jobs -- TODAY
+# Since dictionaries are treated as sets, identical jobs only perform once. Debug this
+# Figure how to keep track of final amount of files for a format moved to their destination
+# Make a text that shows the program is running
 # Resize window adjustments
+# Better Design Ideas
