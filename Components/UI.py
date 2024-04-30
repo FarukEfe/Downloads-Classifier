@@ -66,9 +66,8 @@ class DropList(ctk.CTkScrollableFrame):
     # Configure rows
     def config(self,new_values:list[str]):
         if not self.__should_config(new_values):
-            print("No need to configurate")
             return
-        print("Configuration needed.",end="\r")
+        self.values = new_values
         self.__unpack()
         self.rows = []
         row_len = len(new_values)
