@@ -1,5 +1,5 @@
 # Internal Modules
-from Monitor import Monitor
+from Workers.Monitor import Monitor
 from Workers.Subprocess import Subprocess
 from Helpers.Helpers import *
 # Design Libraries
@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from Components.UI import *
+#from Components.Images import * # Fix error
 # Other Libraries
 from threading import Thread,Event
 import os
@@ -39,7 +40,7 @@ class App:
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
-        self.window.resizable(width=False,height=False)
+        self.window.minsize(MINW,MINH)
 
     def __get_state_label(self) -> str:
         t = ""
@@ -97,10 +98,10 @@ class App:
     
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
-        button_frame = ctk.CTkFrame(master=self.window)
-        button_frame.place(relx=0.15,rely=0.5,relwidth=0.3,relheight=1.0,anchor='center')
+        button_frame = ctk.CTkFrame(master=self.window,width=250)
+        button_frame.pack(side="left",fill="y")
         contents_frame = ctk.CTkFrame(master=self.window)
-        contents_frame.place(relx = 0.65,rely=0.5,relwidth=0.7,relheight=1.0,anchor='center')
+        contents_frame.pack(side="left",fill="both",expand=True)
         return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
@@ -137,7 +138,7 @@ class App:
         dp.pack(side="right",padx=(0,15))
         flex_frame.pack(pady=10,padx=10,fill="x")
         # Pack Buttons
-        start.pack(side="top",fill="x",pady=(210,0),padx=10)
+        start.pack(side="top",fill="x",pady=(240,0),padx=10)
         button_stop.pack(side="right",padx=(8,0))
         button_start.pack(side="right",padx=(0,8))
     
@@ -162,7 +163,7 @@ class App:
         # Generate recent jobs finished
         jobs_list = DropList(frame,[],1.0)
         self.config_logs = jobs_list
-        jobs_list.pack(pady=(0,10),padx=10,side="top",fill="both")
+        jobs_list.pack(pady=(0,10),padx=10,side="top",fill="both",expand=True)
     
     # Back-end Operations
     def __kill_thread(self):
@@ -257,7 +258,3 @@ if __name__ == '__main__':
 # Re-write yesterday's data type.
 # Change algorithms accordingly.
 # Remove job removing, instead append all jobs in queue to finished and flush the queue (the logic bug you missed yesterday)
-
-# Resize window adjustments:
-# Start Button shouldn't disappear when shrinking window, instead use flex (or grid) to push them down --TODAY
-# User cannot shrink window lower than a certain horizontal value and same for the vertical --TODAY
