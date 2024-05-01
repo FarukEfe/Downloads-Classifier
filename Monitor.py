@@ -31,8 +31,9 @@ class CustomHandler(FileSystemEventHandler):
 
 class Monitor:
 
-    queue: dict[str:str] = {}
-    finished: dict[str:str] = {}
+    __queue: dict[str:str] = {}
+    __finished: dict[str:str] = {}
+    __stats: dict[str:int] = {}
 
     def __init__(self):
         self.directory = None
@@ -40,10 +41,22 @@ class Monitor:
         self.event_handler: FileSystemEventHandler = None
         self.dest_handler = DestinationHandler()
 
+    @property
+    def stats(self):
+        return self.__stats
+    
+    @property
+    def queue(self):
+        return self.__queue
+
+    @property
+    def finished(self):
+        return self.__finished
+    
     def list_finished_jobs(self) -> list[str]:
         texts = []
         for key in list(self.finished.keys()):
-            texts.append(f"{key} moved to {self.finished[key]}")
+            texts.append(f"\"{key}\" moved to \"{self.finished[key]}\"")
         return texts
 
     def set_directory(self,directory):
@@ -57,7 +70,7 @@ class Monitor:
         if destination is None:
             return
         # Add new job to dictionary
-        self.queue[file_path] = destination
+        self.__queue[file_path] = destination
         
     # Event handler and observer setup
     def start(self) -> int:
@@ -84,14 +97,24 @@ class Monitor:
     
     def delete_keys(self, keys: list[str]):
         for key in keys:
-            self.finished[key] = self.queue[key]
-            del self.queue[key]
+            self.__finished[key] = self.__queue[key]
+            file_format = self.__queue[key].split(".")[-1] # Get file format
+            # Keep track of jobs done per format
+            if file_format in (self.__stats.keys()):
+                self.__stats[file_format] += 1
+            else:
+                self.__stats[file_format] = 1
+            # Delete job from queue after completion
+            del self.__queue[key]
             
     def flush_logs(self):
-        self.finished = {}
+        self.__finished = {}
+    
+    def flush_stats(self):
+        self.__stats = {}
     
     def flush_jobs(self):
-        self.queue = {}
+        self.__queue = {}
 
 if __name__ == "__main__":
     process = Subprocess()
