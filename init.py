@@ -245,13 +245,12 @@ if __name__ == '__main__':
     app = App()
     app.runApp()
 
-# Figure how to keep track of final amount of files for a format moved to their destination
-
 # Better Design Ideas:
-# Circular buttons for start/stop designed on figma
-# Gradient background color
+# Circular buttons for start/stop designed on figma --TODAY
+# Gradient background color --TODAY
 # burning glass picture floating when the search is happening
 # info display message at the bottom of start/stop for different states of the app
+# display monitor stats once the session is over
 
 # DONT CODE WHEN YOU'RE TIRED...
 # Add the branch where duplicate jobs are all done. 
@@ -260,5 +259,5 @@ if __name__ == '__main__':
 # Remove job removing, instead append all jobs in queue to finished and flush the queue (the logic bug you missed yesterday)
 
 # Resize window adjustments:
-# Start Button shouldn't disappear when shrinking window, instead use flex (or grid) to push them down
-# User cannot shrink window lower than a certain horizontal value and same for the vertical
+# Start Button shouldn't disappear when shrinking window, instead use flex (or grid) to push them down --TODAY
+# User cannot shrink window lower than a certain horizontal value and same for the vertical --TODAY

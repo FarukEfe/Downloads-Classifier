@@ -6,13 +6,6 @@ Create text that displays monitor file
 Create Classified Files Counter
 '''
 
-# Custom Button
-
-class CustomButton(ctk.CTkButton):
-    def __init__(self,window:ctk.CTkFrame,txt:str,call:callable):
-        super().__init__(window,text=txt,command=call)
-        self.place(relx=0.5,rely=0.5,width=120,relheight=30,anchor='center')
-
 # Design Custom Table
     
 class CustomTable(ctk.CTkScrollableFrame):
