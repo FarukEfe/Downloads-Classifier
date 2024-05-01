@@ -39,9 +39,10 @@ class App:
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
+        self.window.resizable(width=False,height=False)
 
-    def get_state_label(self) -> str:
-        t = "Standby..."
+    def __get_state_label(self) -> str:
+        t = ""
         if self.t_on:
             t = "Running..."
         elif self.t_run:
@@ -75,7 +76,7 @@ class App:
     def __config_label(self):
         if self.config_label == None:
             return
-        self.config_label.configure(text=self.get_state_label())
+        self.config_label.configure(text=self.__get_state_label())
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -97,9 +98,9 @@ class App:
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         button_frame = ctk.CTkFrame(master=self.window)
-        button_frame.place(relx=0.2,rely=0.5,relwidth=0.4,relheight=1.0,anchor='center')
+        button_frame.place(relx=0.15,rely=0.5,relwidth=0.3,relheight=1.0,anchor='center')
         contents_frame = ctk.CTkFrame(master=self.window)
-        contents_frame.place(relx = 0.7,rely=0.5,relwidth=0.6,relheight=1.0,anchor='center')
+        contents_frame.place(relx = 0.65,rely=0.5,relwidth=0.7,relheight=1.0,anchor='center')
         return button_frame,contents_frame
     
     def __gen_buttons(self,frame):
@@ -109,34 +110,34 @@ class App:
         dir_frame = ctk.CTkFrame(master=upper,fg_color="transparent")
         button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
         button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
-        dp = dropdown(window=flex_frame,values=ftypes,width=100,height=25,call=self.__select_format)
+        dp = dropdown(window=flex_frame,values=ftypes,width=70,height=25,call=self.__select_format)
         # Start frame
         start = ctk.CTkFrame(master=frame,fg_color="transparent")
         button_start = ctk.CTkButton(
                 master=start,
                 text="Start",
-                width=120,
+                width=100,
                 fg_color="blue",
                 command=self.__run_monitor
             )
         button_stop = ctk.CTkButton(
                 master=start,
                 text="Stop",
-                width=120,
+                width=100,
                 fg_color="grey",
                 command=self.__kill_thread
             )
         self.config_start = button_start
         self.config_stop = button_stop
         # Pack Upper Frame
-        upper.pack(side="top")
-        dir_frame.pack(pady=10,fill="x")
+        upper.pack(side="top",fill="x")
+        dir_frame.pack(pady=10,padx=10,fill="x")
         button_dir.pack(side="right")
         button_dest.pack(side="right")
-        dp.pack(side="right",padx=15)
-        flex_frame.pack(pady=10)
+        dp.pack(side="right",padx=(0,15))
+        flex_frame.pack(pady=10,padx=10,fill="x")
         # Pack Buttons
-        start.pack(side="top",fill="x",pady=(210,0),padx=25)
+        start.pack(side="top",fill="x",pady=(210,0),padx=10)
         button_stop.pack(side="right",padx=(8,0))
         button_start.pack(side="right",padx=(0,8))
     
@@ -154,14 +155,14 @@ class App:
         table.pack(pady=10,padx=10,side="top",fill="x")
         # Text that shows if running
         thread_frame = ctk.CTkFrame(frame,fg_color="transparent")
-        thread_frame.pack(side="top",fill="x",pady=10)
-        thread_label = ctk.CTkLabel(thread_frame,text="Standby...",font=("Helvetica",20))
-        thread_label.pack(side="left",padx=(20,0))
+        thread_frame.pack(side="top",fill="x",pady=(10,5))
+        thread_label = ctk.CTkLabel(thread_frame,text="",font=("Helvetica",18))
+        thread_label.pack(side="left",padx=(10,0))
         self.config_label = thread_label
         # Generate recent jobs finished
         jobs_list = DropList(frame,[],1.0)
         self.config_logs = jobs_list
-        jobs_list.pack(pady=10,padx=10,side="top",fill="both")
+        jobs_list.pack(pady=(0,10),padx=10,side="top",fill="both")
     
     # Back-end Operations
     def __kill_thread(self):
