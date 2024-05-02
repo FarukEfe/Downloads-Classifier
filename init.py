@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from Components.UI import *
+from Components.Gradient import GradientBg
 #from Components.Images import * # Fix error
 # Other Libraries
 from threading import Thread,Event
@@ -98,9 +99,11 @@ class App:
     
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
-        button_frame = ctk.CTkFrame(master=self.window,width=250)
+        #background = GradientBg(self.window,GRAD,LEVELS)
+        #background.pack(side="top",fill="both",expand=True)
+        button_frame = ctk.CTkFrame(master=self.window,width=250,fg_color="transparent")
         button_frame.pack(side="left",fill="y")
-        contents_frame = ctk.CTkFrame(master=self.window)
+        contents_frame = ctk.CTkFrame(master=self.window,fg_color="transparent")
         contents_frame.pack(side="left",fill="both",expand=True)
         return button_frame,contents_frame
     

@@ -1,16 +1,16 @@
 import customtkinter as ctk
 
 class GradientBg(ctk.CTkFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, gradients:list[str],levels:list[float]):
         ctk.CTkFrame.__init__(self, parent)
-        f2 = GradientCanvas(self, ["#FFFFFF","#000000"], [0,1])
+        f2 = GradientCanvas(self, gradients, levels)
         f2.pack(side="bottom", fill="both", expand=True)
 
 class GradientCanvas(ctk.CTkCanvas):
     def __init__(self, parent, colors_hex:list[str], levels_hex:list[float]):
         ctk.CTkCanvas.__init__(self, parent)
         self.colors = colors_hex
-        self.levels = levels_hex
+        self.levels = sorted(levels_hex)
         self.bind("<Configure>",self.__draw_mult)
     
     # Code taken from: https://stackoverflow.com/questions/26178869/is-it-possible-to-apply-gradient-colours-to-bg-of-tkinter-python-widgets
@@ -41,9 +41,26 @@ class GradientCanvas(ctk.CTkCanvas):
     
     def get_lowerbound_index(self,level) -> int:
         for i in range(len(self.levels)-1):
-            if self.levels[i] < level and level < self.levels[i+1]:
+            if self.levels[i] < level and level <= self.levels[i+1]:
                 return i
         return -1
+    
+    def get_diff(self,level) -> float:
+        for i in range(len(self.levels)-1):
+            if self.levels[i] < level and level <= self.levels[i+1]:
+                return (level-self.levels[i])/(self.levels[i+1]-self.levels[i])
+        return 1
+    
+    def get_lower_slice(self,limit,n) -> int:
+        selection = 0
+        for level in self.levels:
+            val = limit*level
+            if val >= n:
+                return int(n-selection)
+            
+            selection = val
+        return int(n-selection)
+
     
     # This method is developed by myself to fit infinite gradients and their levels as a float between 0 and 1
     def __draw_mult(self,event=None):
@@ -75,24 +92,17 @@ class GradientCanvas(ctk.CTkCanvas):
         for i in range(limit):
             current_level = i/limit
             print(current_level)
-            nr,ng,nb = 0,0,0 # Get appropriate diff, colors, progress
-            if current_level in self.levels:
-                color_index = list.index(self.levels,current_level)
-                color = rgbs[color_index]
-                nr,ng,nb = color
-            else:
-                lower_index = self.get_lowerbound_index(current_level)
-                print(lower_index)
-                color = rgbs[lower_index]
-                print(color)
-                diff = current_level - self.levels[lower_index]
-                print(diff)
-                nr = int(color[0] + (ratios_r[lower_index] * diff))
-                ng = int(color[1] + (ratios_g[lower_index] * diff))
-                nb = int(color[2] + (ratios_b[lower_index] * diff))
-                print(ratios_r[lower_index],nb,ng,nb)
+            lower_index = self.get_lowerbound_index(current_level)
+            print(lower_index)
+            color = rgbs[lower_index]
+            print(color)
+            diff = self.get_diff(current_level)
+            shift = diff*self.get_lower_slice(limit,i)
+            nr = int(color[0] + (ratios_r[lower_index]*shift))
+            ng = int(color[1] + (ratios_g[lower_index]*shift))
+            nb = int(color[2] + (ratios_b[lower_index]*shift))
+            print(ratios_r[lower_index],nb,ng,nb)
             print("\n")
-
             color = '#%02x%02x%02x' % (nr,ng,nb)
             self.create_line(i,0,i,height, tags=("gradient",), fill=color)
         self.lower("gradient")
@@ -100,5 +110,5 @@ class GradientCanvas(ctk.CTkCanvas):
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    GradientBg(root).pack(fill="both", expand=True)
+    GradientBg(root,["#EF68A1","D081EB","DE815A","#C6B049"],[0.0,0.33,0.66,1.0]).pack(fill="both", expand=True)
     root.mainloop()
