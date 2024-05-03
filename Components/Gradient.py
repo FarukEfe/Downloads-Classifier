@@ -4,36 +4,16 @@ class GradientBg(ctk.CTkFrame):
     def __init__(self, parent, gradients:list[str],levels:list[float]):
         ctk.CTkFrame.__init__(self, parent)
         f2 = GradientCanvas(self, gradients, levels)
-        f2.pack(side="bottom", fill="both", expand=True)
+        f2.pack(side="top", fill="both", expand=True)
 
 class GradientCanvas(ctk.CTkCanvas):
     def __init__(self, parent, colors_hex:list[str], levels_hex:list[float]):
         ctk.CTkCanvas.__init__(self, parent)
         self.colors = colors_hex
         self.levels = sorted(levels_hex)
-        self.bind("<Configure>",self.__draw_mult)
+        self.bind("<Configure>",self.__draw)
     
-    # Code taken from: https://stackoverflow.com/questions/26178869/is-it-possible-to-apply-gradient-colours-to-bg-of-tkinter-python-widgets
-    def __draw(self,event=None):
-        self.delete("gradient")
-        width = self.winfo_width()
-        height = self.winfo_height()
-        limit = width
-        (r1,g1,b1) = self.winfo_rgb(self.colors[0])
-        (r2,g2,b2) = self.winfo_rgb(self.colors[1])
-        r_ratio = float(r2-r1) / limit
-        g_ratio = float(g2-g1) / limit
-        b_ratio = float(b2-b1) / limit
-
-        for i in range(limit):
-            nr = int(r1 + (r_ratio * i))
-            ng = int(g1 + (g_ratio * i))
-            nb = int(b1 + (b_ratio * i))
-            color = "#%4.4x%4.4x%4.4x" % (nr,ng,nb)
-            self.create_line(i,0,i,height, tags=("gradient",), fill=color)
-        self.lower("gradient")
-    
-    # Code taken from https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
+    # This method is taken from: https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
     def hex_to_rgb(self,hex) -> tuple[int,int,int]:
         val = hex.lstrip('#')
         lv = len(val)
@@ -63,7 +43,7 @@ class GradientCanvas(ctk.CTkCanvas):
 
     
     # This method is developed by myself to fit infinite gradients and their levels as a float between 0 and 1
-    def __draw_mult(self,event=None):
+    def __draw(self,event=None):
         self.delete("gradient")
         width = self.winfo_width()
         height = self.winfo_height()
@@ -110,5 +90,6 @@ class GradientCanvas(ctk.CTkCanvas):
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    GradientBg(root,["#EF68A1","D081EB","DE815A","#C6B049"],[0.0,0.33,0.66,1.0]).pack(fill="both", expand=True)
+    root.geometry("800x600")
+    GradientBg(root,["#F8AA20","D081EB","DE815A","#C6B049"],[0.0,0.33,0.66,1.0]).pack(fill="both", expand=True)
     root.mainloop()

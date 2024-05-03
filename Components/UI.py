@@ -7,7 +7,7 @@ Create Classified Files Counter
 '''
 
 # Design Custom Table
-    
+
 class CustomTable(ctk.CTkScrollableFrame):
 
     def __init__(self,window:ctk.CTkFrame,rel_widths:tuple[float],dest:dict[str:str]):
@@ -54,7 +54,7 @@ class DropList(ctk.CTkScrollableFrame):
             text = values[i]
             new = TableRow(self,[text],[width])
             self.rows.append(new)
-            new.pack(side="top",fill="x",pady=0)
+            new.pack(side="top",fill="x")
         
     # Configure rows
     def config(self,new_values:list[str]):
@@ -68,7 +68,7 @@ class DropList(ctk.CTkScrollableFrame):
             text = new_values[i]
             new = TableRow(self,[text],[self.width])
             self.rows.append(new)
-            new.pack(side="top",fill="x",pady=0)
+            new.pack(side="top",fill="x")
 
     def __should_config(self,new_vals:list[str]) -> bool:
         return len(new_vals) != len(self.values)
@@ -85,12 +85,10 @@ class TableRow(ctk.CTkFrame):
         limit = min(len(rel_widths),len(values)) # Limit iteration to shorter list
         offset = 0
         for i in range(limit):
-            # Border (not working intended): ,border_width=2,border_color="white"
+            # Border (not working intended): ,border_width=2,border_color="#EAEAEA"
             cell = ctk.CTkFrame(master=self)
             text = ctk.CTkLabel(master=cell,text=values[i],anchor="center")
             cell.place(rely=0.5,relx=offset,relwidth=rel_widths[i],anchor=ctk.W)
-            #cell.pack(side="left",fill="x")
-            #cell.grid(row=i,sticky=ctk.W)
             text.place(x=10,rely=0.5,anchor=ctk.W)
             offset += rel_widths[i]
         

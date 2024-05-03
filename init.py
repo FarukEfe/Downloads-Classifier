@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from Components.UI import *
-from Components.Gradient import GradientBg
+from Components.Gradient import *
 #from Components.Images import * # Fix error
 # Other Libraries
 from threading import Thread,Event
@@ -37,11 +37,13 @@ class App:
     def __init__(self):
         self.window = ctk.CTk() # Main window
         ctk.set_appearance_mode("Dark")
-        ctk.set_default_color_theme("blue")
+        ctk.set_appearance_mode("blue")
         # Tk window specs
         self.window.title("Downloads Classifier")
         self.window.geometry(f"{WIDTH}x{HEIGHT}")
         self.window.minsize(MINW,MINH)
+        # Supposed to set widget transparent, but cuts out a whole section of the window
+        #self.window.attributes("-transparentcolor","#FFFFF9")
 
     def __get_state_label(self) -> str:
         t = ""
@@ -72,8 +74,8 @@ class App:
     def __config_buttons(self):
         if self.config_start == None or self.config_stop == None:
             return
-        self.config_start.configure(require_redraw=True,fg_color=("grey" if self.t_complete else "yellow" if self.t_on else "blue"),text=("Pause" if self.t_on else "Continue" if self.t_run else "Start"))
-        self.config_stop.configure(require_redraw=True,fg_color=("green" if self.t_complete else "red" if self.t_run else "grey"))
+        self.config_start.configure(require_redraw=True,text_color=("#B0B0B0" if self.t_complete else "#EAEAEA"),fg_color=("grey" if self.t_complete else "#3E84D7" if self.t_on else "#46AA56"),text=("Pause" if self.t_on else "Continue" if self.t_run else "Start"))
+        self.config_stop.configure(require_redraw=True,text_color=("#B0B0B0" if self.t_complete or not self.t_run else "#EAEAEA"),fg_color=("#46AA56" if self.t_complete else "#D14040" if self.t_run else "grey"))
 
     def __config_label(self):
         if self.config_label == None:
@@ -96,11 +98,11 @@ class App:
         folder = self.process.ask_user_folder()
         self.monitor.set_directory(folder)
         self.__config_directory()
-    
+        
     # View Layout
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         #background = GradientBg(self.window,GRAD,LEVELS)
-        #background.pack(side="top",fill="both",expand=True)
+        #background.place(relx=0,rely=0,relwidth=1,relheight=1,anchor=ctk.NW)
         button_frame = ctk.CTkFrame(master=self.window,width=250,fg_color="transparent")
         button_frame.pack(side="left",fill="y")
         contents_frame = ctk.CTkFrame(master=self.window,fg_color="transparent")
@@ -112,8 +114,8 @@ class App:
         upper = ctk.CTkFrame(master=frame,fg_color="transparent")
         flex_frame = ctk.CTkFrame(master=upper,fg_color="transparent")
         dir_frame = ctk.CTkFrame(master=upper,fg_color="transparent")
-        button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",command=self.__set_monitor_file) # Sets monitor downloads folder
-        button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",command=self.__set_format_destination)
+        button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",fg_color="#46AA56",command=self.__set_monitor_file) # Sets monitor downloads folder
+        button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",fg_color="#46AA56",command=self.__set_format_destination)
         dp = dropdown(window=flex_frame,values=ftypes,width=70,height=25,call=self.__select_format)
         # Start frame
         start = ctk.CTkFrame(master=frame,fg_color="transparent")
@@ -121,7 +123,9 @@ class App:
                 master=start,
                 text="Start",
                 width=100,
-                fg_color="blue",
+                fg_color="#46AA56",
+                text_color="#EAEAEA",
+                hover_color="darkgrey",
                 command=self.__run_monitor
             )
         button_stop = ctk.CTkButton(
@@ -129,6 +133,8 @@ class App:
                 text="Stop",
                 width=100,
                 fg_color="grey",
+                text_color="#B0B0B0",
+                hover_color="darkgrey",
                 command=self.__kill_thread
             )
         self.config_start = button_start
@@ -170,6 +176,8 @@ class App:
     
     # Back-end Operations
     def __kill_thread(self):
+        if self.t_complete or not self.t_run:
+            return
         self.event.set()
         print("Stopped listening.")
 
