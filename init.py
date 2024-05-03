@@ -26,12 +26,14 @@ class App:
     config_start: ctk.CTkButton = None
     config_stop: ctk.CTkButton = None
     config_label: ctk.CTkLabel = None
+    config_feedback: ctk.CTkLabel = None
 
     # Event Handler for Thread
     thread: Thread = None
     t_on = False
     t_run: bool = False
     t_complete: bool = False
+    t_feedback: bool = False
     event: Event = Event()
 
     def __init__(self):
@@ -81,6 +83,9 @@ class App:
         if self.config_label == None:
             return
         self.config_label.configure(text=self.__get_state_label())
+    
+    def __config_feedback_info(self):
+        self.config_feedback.configure(text=("Plase select monitor file" if self.t_feedback else ""))
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -117,6 +122,10 @@ class App:
         button_dir = ctk.CTkButton(master=dir_frame,text="Choose Folder",fg_color="#46AA56",command=self.__set_monitor_file) # Sets monitor downloads folder
         button_dest = ctk.CTkButton(master=flex_frame,text="Set Destination",fg_color="#46AA56",command=self.__set_format_destination)
         dp = dropdown(window=flex_frame,values=ftypes,width=70,height=25,call=self.__select_format)
+        # Info frame
+        info = ctk.CTkFrame(master=frame,fg_color="transparent")
+        info_label1 = ctk.CTkLabel(master=info,text=INFO1,justify="left",fg_color="transparent")
+        info_label2 = ctk.CTkLabel(master=info,text=INFO2,justify="left",fg_color="transparent")
         # Start frame
         start = ctk.CTkFrame(master=frame,fg_color="transparent")
         button_start = ctk.CTkButton(
@@ -139,6 +148,11 @@ class App:
             )
         self.config_start = button_start
         self.config_stop = button_stop
+        # Thread Info Frame
+        t_info_frame = ctk.CTkFrame(frame,fg_color="transparent")
+        t_info_text = ctk.CTkLabel(t_info_frame,text="",text_color="#E5B300",justify="left")
+        self.config_feedback = t_info_text
+
         # Pack Upper Frame
         upper.pack(side="top",fill="x")
         dir_frame.pack(pady=10,padx=10,fill="x")
@@ -146,10 +160,17 @@ class App:
         button_dest.pack(side="right")
         dp.pack(side="right",padx=(0,15))
         flex_frame.pack(pady=10,padx=10,fill="x")
+        # Pack Info
+        info.pack(side="top",fill="x",pady=(20,0))
+        info_label1.place(relx=0.05,rely=0,anchor=ctk.NW)
+        info_label2.place(relx=0.05,rely=0.3,anchor=ctk.NW)
         # Pack Buttons
-        start.pack(side="top",fill="x",pady=(240,0),padx=10)
+        start.pack(side="top",fill="x",pady=(20,0),padx=10)
         button_stop.pack(side="right",padx=(8,0))
         button_start.pack(side="right",padx=(0,8))
+        # Pack Feedback
+        t_info_frame.pack(side="top",fill="x",pady=10)
+        t_info_text.pack(side="top",fill="x")
     
     def __gen_contents(self,frame):
         # Generate monitor directory text
@@ -222,6 +243,8 @@ class App:
 
         if not self.monitor.can_start():
             print("Make sure you have a monitoring directory selected.")
+            self.t_feedback = True
+            self.__config_feedback_info()
             return
         
         if self.t_complete:
@@ -238,10 +261,11 @@ class App:
         # Define & Start Thread
         self.thread = Thread(target=self.__monitor_mainloop,daemon=True)
         self.thread.start()
+        # Update View State
         self.t_run = True
-        # Listen for thread to finish (end of code of exception)
-        # Change View Model and Configurate Buttons
         self.t_on = True
+        self.t_feedback = False
+        # Configure Buttons
         self.__config_buttons()
         self.__config_label()
 
@@ -258,8 +282,6 @@ if __name__ == '__main__':
     app.runApp()
 
 # Better Design Ideas:
-# Circular buttons for start/stop designed on figma --TODAY
-# Gradient background color --TODAY
 # burning glass picture floating when the search is happening
 # info display message at the bottom of start/stop for different states of the app
 # display monitor stats once the session is over
@@ -269,3 +291,7 @@ if __name__ == '__main__':
 # Re-write yesterday's data type.
 # Change algorithms accordingly.
 # Remove job removing, instead append all jobs in queue to finished and flush the queue (the logic bug you missed yesterday)
+
+#POSTPONED:
+# Circular buttons for start/stop designed on figma
+# Gradient background color
