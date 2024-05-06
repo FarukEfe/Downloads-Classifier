@@ -30,6 +30,7 @@ class App:
     config_feedback: ctk.CTkLabel = None
     config_stat: ctk.CTkLabel = None
     config_timer: ctk.CTkLabel = None
+    config_result: ctk.CTkButton = None
 
     # Event Handler for Thread
     thread: Thread = None
@@ -42,7 +43,6 @@ class App:
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
-        self.session_info = ctk.CTk()
         ctk.set_appearance_mode("Dark")
         ctk.set_appearance_mode("blue")
         # Tk window specs
@@ -98,6 +98,9 @@ class App:
     
     def __config_timer(self):
         self.config_timer.configure(text=f"Runtime: {floor(10*(t.time()-self.timer_start))/10}s")
+    
+    def __display_result(self):
+        self.config_result.pack(side="left",padx=(15,0))
 
     # Main Window Button Functionalities
     def __select_format(self,choice):
@@ -221,19 +224,18 @@ class App:
                 text="See Results",
                 width=100,
                 fg_color="#46AA56",
-                text_color="#B0B0B0",
                 hover_color="darkgrey",
-                command=self.__kill_thread
+                command=self.__show_results
             )
-        results_button.pack(side="left",padx=(15,0))
+        self.config_result = results_button
         # Generate recent jobs finished
         jobs_list = DropList(frame,[],1.0)
         self.config_logs = jobs_list
         jobs_list.pack(pady=(0,10),padx=10,side="top",fill="both",expand=True)
     
     # Session Info Window UI Generation
-    def __gen_session_info(self):
-        scroll_view = ctk.CTkScrollableFrame(self.session_info)
+    def __gen_session_info(self,master):
+        scroll_view = ctk.CTkScrollableFrame(master)
         scroll_view.place(relx=0,rely=0,relwidth=1,relheight=1,anchor=ctk.NW)
         stat_keys = list(self.monitor.stats.keys())
         info_count = len(stat_keys)
@@ -297,6 +299,7 @@ class App:
             self.monitor.join(0)
             self.__config_buttons()
             self.__config_label()
+            self.__display_result()
             print("Thread execution over. Configuration complete.")
             
     # Before this code runs, you have to make sure that files have a destination
@@ -331,6 +334,15 @@ class App:
         # Configure Buttons
         self.__config_buttons()
         self.__config_label()
+    
+    def __show_results(self):
+        self.window.destroy()
+        session_info = ctk.CTk()
+        session_info.title("Downloads Classifier (Session Results)")
+        session_info.geometry(f"{WIDTH}x{HEIGHT}")
+        session_info.minsize(MINW,MINH)
+        self.__gen_session_info(session_info)
+        session_info.mainloop()
 
     def runApp(self):
         # Here put any previous setup to do before running the app mainloop
