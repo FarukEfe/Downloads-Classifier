@@ -6,10 +6,11 @@ from Helpers.Helpers import *
 import customtkinter as ctk
 from Components.UI import *
 from Components.Gradient import *
+from Components.Session import *
 #from Components.Images import * # Fix error
 # Other Libraries
 from threading import Thread,Event
-from math import floor
+from math import floor,ceil
 import time as t
 import os
 
@@ -41,6 +42,7 @@ class App:
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
+        self.session_info = ctk.CTk()
         ctk.set_appearance_mode("Dark")
         ctk.set_appearance_mode("blue")
         # Tk window specs
@@ -50,6 +52,7 @@ class App:
         # Supposed to set widget transparent, but cuts out a whole section of the window
         #self.window.attributes("-transparentcolor","#FFFFF9")
 
+    # Get thread state
     def __get_state_label(self) -> str:
         t = ""
         if self.t_on:
@@ -60,7 +63,7 @@ class App:
             t = "Session Over."
         return t
 
-    # Internal Calls
+    # Configurations for Main Window
     def __config_jobs(self):
         if self.config_logs == None:
             return
@@ -96,6 +99,7 @@ class App:
     def __config_timer(self):
         self.config_timer.configure(text=f"Runtime: {floor(10*(t.time()-self.timer_start))/10}s")
 
+    # Main Window Button Functionalities
     def __select_format(self,choice):
         self.selected_format = choice
     
@@ -113,7 +117,7 @@ class App:
         self.monitor.set_directory(folder)
         self.__config_directory()
         
-    # View Layout
+    # UI Generation for Main Window
     def __gen_frames(self) -> tuple[ctk.CTkFrame,ctk.CTkFrame]:
         #background = GradientBg(self.window,GRAD,LEVELS)
         #background.place(relx=0,rely=0,relwidth=1,relheight=1,anchor=ctk.NW)
@@ -212,11 +216,45 @@ class App:
         thread_label = ctk.CTkLabel(thread_frame,text="",font=("Helvetica",18))
         thread_label.pack(side="left",padx=(10,0))
         self.config_label = thread_label
+        results_button = ctk.CTkButton(
+                master=thread_frame,
+                text="See Results",
+                width=100,
+                fg_color="#46AA56",
+                text_color="#B0B0B0",
+                hover_color="darkgrey",
+                command=self.__kill_thread
+            )
+        results_button.pack(side="left",padx=(15,0))
         # Generate recent jobs finished
         jobs_list = DropList(frame,[],1.0)
         self.config_logs = jobs_list
         jobs_list.pack(pady=(0,10),padx=10,side="top",fill="both",expand=True)
     
+    # Session Info Window UI Generation
+    def __gen_session_info(self):
+        scroll_view = ctk.CTkScrollableFrame(self.session_info)
+        scroll_view.place(relx=0,rely=0,relwidth=1,relheight=1,anchor=ctk.NW)
+        stat_keys = list(self.monitor.stats.keys())
+        info_count = len(stat_keys)
+        rows = ceil(info_count/3)
+
+        for c in range(3):
+            scroll_view.grid_columnconfigure(c,weight=1)
+
+        for r in range(rows):
+            scroll_view.grid_rowconfigure(r,weight=1)
+        
+        for i in range(len(stat_keys)):
+            # Create Stat Frame
+            key = stat_keys[i]
+            job_n = self.monitor.stats[key]
+            frame = FormatStatFrame(scroll_view,key,job_n)
+            # Compute Column and Row for Display
+            r = i//3
+            c = i % 3
+            frame.grid(row=r,column=c)
+
     # Back-end Operations
     def __kill_thread(self):
         if self.t_complete or not self.t_run:
