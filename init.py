@@ -40,6 +40,8 @@ class App:
     t_feedback: bool = False
     event: Event = Event()
     timer_start = 0
+    pause_starts = []
+    pause_ends = []
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
@@ -51,6 +53,16 @@ class App:
         self.window.minsize(MINW,MINH)
         # Supposed to set widget transparent, but cuts out a whole section of the window
         #self.window.attributes("-transparentcolor","#FFFFF9")
+
+    # Get total pause time
+    def total_pause(self) -> float:
+        limit = len(self.pause_ends)
+        sum = 0
+        for i in range(limit):
+            sum += self.pause_ends[i]
+            sum -= self.pause_starts[i]
+        return sum
+
 
     # Get thread state
     def __get_state_label(self) -> str:
@@ -97,7 +109,10 @@ class App:
         self.config_stat.configure(text=f"Moved files: {len(self.monitor.finished)}")
     
     def __config_timer(self):
-        self.config_timer.configure(text=f"Runtime: {floor(10*(t.time()-self.timer_start))/10}s")
+        display = t.time()-self.total_pause()-self.timer_start
+        if not self.t_on:
+            display = self.pause_starts[-1]-self.total_pause()-self.timer_start
+        self.config_timer.configure(text=f"Runtime: {floor(10*display)/10}s")
     
     def __display_result(self):
         self.config_result.pack(side="left",padx=(15,0))
@@ -318,6 +333,10 @@ class App:
 
         if self.t_run:
             print("Program already running. Toggling pause")
+            if self.t_on:
+                self.pause_starts.append(t.time())
+            else:
+                self.pause_ends.append(t.time())
             self.t_on = not self.t_on
             self.__config_buttons()
             self.__config_label()
