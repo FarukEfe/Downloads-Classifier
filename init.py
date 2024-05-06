@@ -3,14 +3,14 @@ from Workers.Monitor import Monitor
 from Workers.Subprocess import Subprocess
 from Helpers.Helpers import *
 # Design Libraries
-import tkinter as tk
-from tkinter import ttk
 import customtkinter as ctk
 from Components.UI import *
 from Components.Gradient import *
 #from Components.Images import * # Fix error
 # Other Libraries
 from threading import Thread,Event
+from math import floor
+import time as t
 import os
 
 class App:
@@ -27,6 +27,8 @@ class App:
     config_stop: ctk.CTkButton = None
     config_label: ctk.CTkLabel = None
     config_feedback: ctk.CTkLabel = None
+    config_stat: ctk.CTkLabel = None
+    config_timer: ctk.CTkLabel = None
 
     # Event Handler for Thread
     thread: Thread = None
@@ -35,6 +37,7 @@ class App:
     t_complete: bool = False
     t_feedback: bool = False
     event: Event = Event()
+    timer_start = 0
 
     def __init__(self):
         self.window = ctk.CTk() # Main window
@@ -86,6 +89,12 @@ class App:
     
     def __config_feedback_info(self):
         self.config_feedback.configure(text=("Plase select monitor file" if self.t_feedback else ""))
+    
+    def __config_stat_label(self):
+        self.config_stat.configure(text=f"Moved files: {len(self.monitor.finished)}")
+    
+    def __config_timer(self):
+        self.config_timer.configure(text=f"Runtime: {floor(10*(t.time()-self.timer_start))/10}s")
 
     def __select_format(self,choice):
         self.selected_format = choice
@@ -152,7 +161,14 @@ class App:
         t_info_frame = ctk.CTkFrame(frame,fg_color="transparent")
         t_info_text = ctk.CTkLabel(t_info_frame,text="",text_color="#E5B300",justify="left")
         self.config_feedback = t_info_text
-
+        # Stats Label Frae
+        t_stat_frame = ctk.CTkFrame(frame,fg_color="transparent")
+        t_stat_label = ctk.CTkLabel(t_stat_frame,text="",justify="left",font=("Helvetica",18))
+        self.config_stat = t_stat_label
+        # Timer
+        t_timer_frame = ctk.CTkFrame(frame,fg_color="transparent")
+        t_timer_label = ctk.CTkLabel(t_timer_frame,text="",justify="left",font=("Helvetica",18))
+        self.config_timer = t_timer_label
         # Pack Upper Frame
         upper.pack(side="top",fill="x")
         dir_frame.pack(pady=10,padx=10,fill="x")
@@ -171,6 +187,12 @@ class App:
         # Pack Feedback
         t_info_frame.pack(side="top",fill="x",pady=10)
         t_info_text.pack(side="top",fill="x")
+        # Pack Stats
+        t_stat_frame.pack(side="top",fill="x",pady=15)
+        t_stat_label.pack(side="left",padx=20)
+        # Pack Timer
+        t_timer_frame.pack(side="top",fill="x",pady=10)
+        t_timer_label.pack(side="left",padx=20)
     
     def __gen_contents(self,frame):
         # Generate monitor directory text
@@ -209,6 +231,8 @@ class App:
             while self.monitor.is_alive():
                 # Configurate the logs
                 self.__config_jobs()
+                self.__config_stat_label()
+                self.__config_timer()
                 # If stop command is given from outside the thread,
                 # kill the monitor thread
                 if self.event.is_set(): 
@@ -265,6 +289,7 @@ class App:
         self.t_run = True
         self.t_on = True
         self.t_feedback = False
+        self.timer_start = t.time()
         # Configure Buttons
         self.__config_buttons()
         self.__config_label()
@@ -283,7 +308,6 @@ if __name__ == '__main__':
 
 # Better Design Ideas:
 # burning glass picture floating when the search is happening
-# info display message at the bottom of start/stop for different states of the app
 # display monitor stats once the session is over
 
 # DONT CODE WHEN YOU'RE TIRED...
